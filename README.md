@@ -1,9 +1,40 @@
 # GymGenie: AI Exercise Tutor
 
+[![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript_5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![MediaPipe](https://img.shields.io/badge/MediaPipe_Vision-0078D4?style=flat-square&logo=google&logoColor=white)](https://developers.google.com/mediapipe)
+[![Three.js](https://img.shields.io/badge/Three.js-black?style=flat-square&logo=three.js&logoColor=white)](https://threejs.org/)
+[![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Groq Cloud](https://img.shields.io/badge/Groq_Cloud_LLM-F55036?style=flat-square&logo=groq&logoColor=white)](https://groq.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![CI](https://github.com/alokprasad573/AI-Exercise-Tutor/actions/workflows/ci.yml/badge.svg)](https://github.com/alokprasad573/AI-Exercise-Tutor/actions/workflows/ci.yml)
 [![CD](https://github.com/alokprasad573/AI-Exercise-Tutor/actions/workflows/cd.yml/badge.svg)](https://github.com/alokprasad573/AI-Exercise-Tutor/actions/workflows/cd.yml)
+[![Vercel](https://img.shields.io/badge/Vercel_Ready-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 A production-grade, privacy-first web application providing client-side real-time exercise pose tracking, deterministic rep counting, form breakdown detection, and multi-tier AI coaching. Built as a unified full-stack **Next.js 16** (Webpack) application using **MediaPipe Tasks Vision**, **React 19**, **MongoDB Atlas**, **Three.js**, and the **Groq Cloud LLM SDK**.
+
+---
+
+## 📖 About Application
+
+**GymGenie** is an intelligent, browser-native AI personal fitness tutor engineered to solve the most critical challenge in home workouts and solo strength training: **lack of real-time form correction, injury prevention, and personalized coaching**.
+
+While traditional fitness apps simply play pre-recorded video tutorials or count reps blindly using accelerometer heuristics, GymGenie turns any standard device webcam into an interactive, real-time biomechanical analysis station.
+
+### 🌟 Key Motivations & Objectives
+- **Prevent Injury Through Form Awareness:** Common training injuries occur due to silent biomechanical failures—such as knee valgus (knee collapse) in squats, lumbar hyperextension during overhead shoulder presses, hip sag in push-ups, or torso swinging during biceps curls. GymGenie analyzes 3D joint vectors in real time, alerting users the instant form begins to break down.
+- **100% Client-Side Vision & Absolute Privacy:** Users exercise in private personal spaces (living rooms, bedrooms, home gyms). GymGenie processes every video frame locally inside the browser using WebAssembly and WebGL via `@mediapipe/tasks-vision`. **No video frames, camera streams, or raw landmark coordinates ever leave the user's browser or touch external servers.**
+- **Instant Verbal Coaching (Zero Interruption):** Instead of forcing the user to stare at numbers or stop their set to look at the screen, GymGenie delivers natural, spoken feedback via the browser's native `SpeechSynthesis` API. Corrective guidance is spoken aloud during the workout just like a human personal trainer standing beside you.
+- **Multi-Tier Coaching Hierarchy:**
+  1. **Primary LLM (`openai/gpt-oss-120b` via Groq Cloud):** Generates context-rich, encouraging, and biomechanically precise guidance in under 300ms.
+  2. **Fallback Secondary LLM (`openai/gpt-oss-20b` via Groq Cloud):** Automatically takes over if the primary model times out or encounters network limits.
+  3. **Offline Deterministic Fallback:** Embedded local expert rule cues ensure the lifter never loses real-time feedback, even completely offline.
+- **Interactive 3D Motion Visualization:** Users can review their movements and skeletal angles through an interactive, pointer-responsive 3D avatar wireframe powered by Three.js and React Three Fiber.
+- **Structured Progress & Analytics:** Every completed workout tracks rep accuracy, form breakdown occurrences, tempo, volume, and sets, visualized through interactive charts powered by Recharts.
+- **Resilient Offline-First Data Layer:** Complete in-memory repository fallback ensures that even if MongoDB is unreachable or unconfigured, the application runs without disruption.
 
 ---
 
@@ -184,3 +215,10 @@ npm run test:e2e
 ## License
 
 This project is licensed under the MIT License.
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/alokprasad573">Alok Prasad</a>
+</p>
+
