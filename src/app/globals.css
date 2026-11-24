@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+:root {
+  --bg-canvas: #090b0a;
+  --bg-surface: #111613;
+  --bg-elevated: #171e19;
+  --bg-subtle: #1d2620;
+  --accent: #c6ff4d;
+  --accent-hover: #d4ff75;
+  --accent-muted: rgba(198, 255, 77, 0.14);
+  --text-primary: #f5f7f2;
+  --text-secondary: #9aa49b;
+  --text-muted: #6c766e;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --status-success: #4ade80;
+  --status-warning: #f5b942;
+  --status-danger: #f06a6a;
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@theme inline {
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-elevated: var(--bg-elevated);
+  --color-subtle: var(--bg-subtle);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-ink-primary: var(--text-primary);
+  --color-ink-secondary: var(--text-secondary);
+  --color-ink-muted: var(--text-muted);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --font-sans: var(--font-brand-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+  border-color: var(--border-subtle);
+}
+
+html {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  color-scheme: dark;
+  overflow-x: clip;
+  scroll-padding-top: 5rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+.gg-no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.gg-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@keyframes gg-live-dot {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* Reserved strictly for active camera capture and live workout states */
+.live-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--accent);
+  animation: gg-live-dot 2s ease-in-out infinite;
+}
+
+.gg-stage-frame {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.gg-surface-interactive {
+  transition:
+    border-color 160ms var(--ease-standard),
+    background-color 160ms var(--ease-standard);
+}
+
+.gg-surface-interactive:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Static neutral 3D perspective floor plane for marketing and auth screens */
+.gg-perspective-stage {
+  perspective: 920px;
+  perspective-origin: 50% 0%;
+  mask-image: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.45) 40%,
+      rgba(0, 0, 0, 0.85) 100%);
+  -webkit-mask-image: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.45) 40%,
+      rgba(0, 0, 0, 0.85) 100%);
+}
+
+.gg-perspective-grid {
+  position: absolute;
+  inset: -40% -25% -20%;
+  transform-origin: 50% 0%;
+  transform: rotateX(70deg);
+  background-image:
+    linear-gradient(to right, rgba(245, 247, 242, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 247, 242, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.gg-backdrop-vignette {
+  background: radial-gradient(ellipse 85% 75% at 50% 44%,
+      transparent 42%,
+      rgba(9, 11, 10, 0.78) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .live-indicator-dot {
+    animation: none;
+  }
+}

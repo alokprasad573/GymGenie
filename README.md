@@ -1,351 +1,186 @@
-# 🏋️ GymGenie — AI Exercise Tutor
+# GymGenie: AI Exercise Tutor
 
-> Real-time pose detection with proactive AI voice coaching, powered by MediaPipe, Groq LLM, and Streamlit.
+[![CI](https://github.com/alokprasad573/AI-Exercise-Tutor/actions/workflows/ci.yml/badge.svg)](https://github.com/alokprasad573/AI-Exercise-Tutor/actions/workflows/ci.yml)
+[![CD](https://github.com/alokprasad573/AI-Exercise-Tutor/actions/workflows/cd.yml/badge.svg)](https://github.com/alokprasad573/AI-Exercise-Tutor/actions/workflows/cd.yml)
 
-![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.54.0-FF4B4B?logo=streamlit&logoColor=white)
-![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10.14-00A86B?logo=google&logoColor=white)
-![Groq](https://img.shields.io/badge/Groq-LLaMA--3.3--70B-F54F29?logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-blue)
+A production-grade, privacy-first web application providing client-side real-time exercise pose tracking, deterministic rep counting, form breakdown detection, and multi-tier AI coaching. Built as a unified full-stack **Next.js 16** (Webpack) application using **MediaPipe Tasks Vision**, **React 19**, **MongoDB Atlas**, **Three.js**, and the **Groq Cloud LLM SDK**.
 
 ---
 
-## 📖 Overview
+## Documentation Index
 
-**GymGenie** is a browser-based AI personal trainer that watches your workout through your webcam in real time. Using Google's MediaPipe Pose Landmarker model, it detects 33 body keypoints per frame, analyses your exercise form, counts your reps and sets, and delivers live voice coaching cues via a Groq-powered LLM and Google Text-to-Speech.
+Comprehensive, production-grade technical documentation is available:
 
-### ✨ Key Features
-
-| Feature | Description |
-|---|---|
-| **Real-Time Pose Detection** | MediaPipe Full Pose Landmarker (float16) at ≥ 0.7 confidence threshold |
-| **5 Exercise Types** | Squats, Push-ups, Biceps Curls, Shoulder Press, Lunges |
-| **Automatic Rep Counting** | State-machine logic (UP/DOWN) per exercise with angle thresholds |
-| **Form Analysis** | Per-exercise biomechanical checks (depth, alignment, arch, swing, balance) |
-| **AI Voice Coaching** | LLaMA 3.3 70B (via Groq) generates 10–15 word spoken coaching cues |
-| **Proactive TTS** | gTTS converts coaching text to MP3; auto-plays in the browser |
-| **Workout Planning** | Set target exercises, sets, and reps before each session |
-| **History Tracking** | SQLite-backed workout log aggregated by exercise and date |
-| **Multi-User Auth** | Username-based session management with automatic user creation |
-| **Custom Branding** | Adobe Clean font + dark-theme CSS injected into the Streamlit UI |
+- 🏗️ **[Architecture & System Design](ARCHITECTURE.md)** (also mirrored in `docs/ARCHITECTURE.md`)
+- 🗄️ **[Database Structure & Schema Specification](DATABASE_STRUCTURE.md)** (also mirrored in `docs/DATABASE_STRUCTURE.md`)
+- 🔌 **[Complete API Specifications](API_SPECIFICATIONS.md)** (also mirrored in `docs/API_SPECIFICATIONS.md`)
+- 📋 **[Complete Features & Biomechanics Inventory](FEATURES.md)** (also mirrored in `docs/FEATURES.md`)
 
 ---
 
-## 🚀 Quick Start
+## Key Features
 
-### Prerequisites
+- **In-Browser Computer Vision:** 33 normalized biomechanical 3D landmarks extracted in real time via `@mediapipe/tasks-vision` (`PoseLandmarker` in `VIDEO` mode). Zero video frames or raw landmarks are ever streamed over the network.
+- **Five Biomechanical Exercise Detectors:**
+  - 🏋️ **Squats:** Hip/knee depth detection (`< 100°`), knee valgus, and forward torso lean alerts (`< 130°`).
+  - 💪 **Push-ups:** Chest depth, elbow flexion (`< 90°`), plank alignment, and hip sag / piking monitoring.
+  - 🦾 **Biceps Curls:** Peak contraction angles, horizontal elbow drift tracking, and torso swing alerts (`> 15°`).
+  - 🏋️‍♂️ **Shoulder Press:** Overhead extension tracking (`> 150°`) and lumbar spine arching protection (`> 15°`).
+  - 🏃 **Lunges:** Front knee angle tracking (`< 100°`) and lateral stance balance stability monitoring.
+- **Multi-Tier AI Coaching:**
+  - **Tier 1 (Primary Model):** `openai/gpt-oss-120b` via server-side Groq SDK.
+  - **Tier 2 (Fallback Model):** `openai/gpt-oss-20b` invoked automatically if primary model times out (4s) or encounters provider errors.
+  - **Tier 3 (Local Cues):** Deterministic corrective voice cues from `src/services/coaching/prompts.ts` if offline.
+- **Browser Spoken Feedback:** Hands-free audible cues delivered with zero network latency using `window.speechSynthesis`.
+- **Interactive 3D Avatar Wireframe:** Three.js / React Three Fiber interactive wireframe rig with dynamic mouse/pointer yaw and pitch responsiveness, plus SVG fallback for reduced motion or non-WebGL devices.
+- **Robust Authentication & Security:**
+  - Argon2id password hashing (`m=65536, t=3, p=1`) with timing attack dummy verification.
+  - Short-lived signed JWT access tokens (`gg_access`) and 7-day rotating refresh tokens (`gg_refresh`).
+  - Automatic session-family revocation upon refresh token reuse detection.
+  - Self-service password reset with single-use SHA-256 tokens.
+- **Analytics & History:** Visualized via Recharts: weekly volume bars, monthly duration area charts, exercise distribution donuts, and rep progression curves.
+- **Fail-Safe Data Layer:** Automatic seamless fallback to an in-memory repository store (`src/repositories/memory-store.ts`) when MongoDB is disconnected or offline.
 
-- Python 3.11+
-- A [Groq API key](https://console.groq.com/) (free tier available)
-- Webcam accessible by the browser
+---
 
-### 1. Clone the Repository
+## Technology Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| **Framework** | Next.js 16.4.6 (Webpack) | Full-stack App Router monolith |
+| **Language** | TypeScript 5 (strict mode) | End-to-end type safety |
+| **Frontend** | React 19, Tailwind CSS v4, Radix UI | Modern, accessible responsive interface |
+| **Computer Vision** | `@mediapipe/tasks-vision` | Browser-side 33-landmark pose tracking |
+| **3D & Motion** | Three.js, React Three Fiber, GSAP, Framer Motion | 3D avatar rig and scroll animations |
+| **Database** | MongoDB Atlas & Mongoose 8 | User accounts, sessions, and workout history |
+| **Auth** | `jose` (JWT) & Argon2id | Dual-cookie token rotation and password hashing |
+| **AI LLM** | Groq Cloud JavaScript SDK | High-speed multi-model corrective coaching cues |
+| **Testing** | Vitest (50 tests) & Playwright | Complete unit, integration, and E2E coverage |
+
+---
+
+## Prerequisites
+
+- **Node.js:** `v22.x` or higher (verified on Node.js `v26.13.0` and `v24.x`).
+- **Package Manager:** `npm` (bundled with Node.js).
+- **Webcam:** Required for live pose tracking and exercise detection.
+- **MongoDB Cluster (Optional):** MongoDB Atlas or local MongoDB instance (the application automatically runs using an in-memory store if omitted).
+- **Groq API Key (Optional):** For AI LLM coaching cues (guaranteed deterministic local audio cues are used when omitted).
+
+---
+
+## Installation & Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/alokprasad573/AI-Exercise-Tutor.git
+   cd AI-Exercise-Tutor
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables:**
+   Copy the example environment file:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Configure `.env.local` with your secrets:
+   ```dotenv
+   NODE_ENV=development
+   APP_URL=http://localhost:3000
+
+   # MongoDB Atlas Connection URI (optional; in-memory store used if blank)
+   ATLAS_URI=mongodb+srv://<username>:<password>@<cluster-host>/gymgenie?retryWrites=true&w=majority
+   MONGODB_URI=
+
+   # Authentication Secrets (generate random strings with min 32 chars)
+   JWT_ACCESS_SECRET=your-minimum-32-character-secret-key-for-access-tokens
+   JWT_REFRESH_SECRET=your-minimum-32-character-secret-key-for-refresh-tokens
+   JWT_ISSUER=gymgenie
+   JWT_AUDIENCE=gymgenie-web
+
+   # Groq AI Coaching (optional; local voice cues used if blank)
+   GROQ_API_KEY=gsk_your_groq_api_key_here
+   GROQ_MODEL=openai/gpt-oss-120b
+   GROQ_FALLBACK_MODEL=openai/gpt-oss-20b
+   ```
+
+4. **Verify Pose Landmarker Model Asset:**
+   Ensure `public/models/pose_landmarker_full.task` exists (~9.4 MB). Check server health:
+   ```bash
+   curl http://localhost:3000/api/health
+   ```
+
+---
+
+## Running the Application
+
+### Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) (or `http://localhost:3001` if port 3000 is occupied).
+
+### Production Build & Run
+```bash
+npm run build
+npm start
+```
+
+---
+
+## Testing & Verification
+
+The test suite validates TypeScript types, code styling, 5-exercise mathematical parity, token family security, and AI coaching fallbacks.
 
 ```bash
-git clone https://github.com/your-username/AI-Exercise-Tutor.git
-cd AI-Exercise-Tutor
-```
+# Run typechecking
+npm run typecheck
 
-### 2. Create a Virtual Environment
+# Run ESLint
+npm run lint
 
-```bash
-python -m venv .venv
+# Run unit & integration test suites (50 tests)
+npm test
 
-# Windows
-.venv\Scripts\activate
+# Run unit tests only
+npm run test:unit
 
-# macOS / Linux
-source .venv/bin/activate
-```
+# Run integration tests only
+npm run test:integration
 
-### 3. Install Python Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-> **Linux users**: Also install the system packages listed in `packages.txt` before installing Python deps:
-> ```bash
-> sudo apt-get install -y libgl1 libglib2.0-0t64 libsm6 libxext6
-> ```
-
-### 4. Configure Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-GROQ_API_KEY=your_groq_api_key_here
-```
-
-Alternatively, if deploying on **Streamlit Community Cloud**, add `GROQ_API_KEY` to your app's Secrets.
-
-### 5. Run the App
-
-```bash
-streamlit run app.py
-```
-
-Open your browser at `http://localhost:8501`.
-
----
-
-## 🗂️ Project Structure
-
-```
-AI-Exercise-Tutor/
-│
-├── app.py                               # Main Streamlit entry point
-├── requirements.txt                     # Python dependencies
-├── packages.txt                         # Linux system-level packages
-├── data.db                              # SQLite workout database (auto-created)
-│
-├── core/
-│   └── base_exercise.py                 # Abstract base class for all exercise detectors
-│
-├── detectors/                           # Exercise-specific pose analysis modules
-│   ├── squats.py                        # SquatDetector
-│   ├── pushups.py                       # PushUpDetector
-│   ├── bieceps_curl.py                  # BicepsCurlDetector
-│   ├── shoulder_press.py                # ShoulderPressDetector
-│   └── lunges.py                        # LungesDetector
-│
-├── ml_models/
-│   └── pose_landmarker_full.task        # MediaPipe Pose Landmarker model (~9 MB)
-│
-├── services/
-│   ├── auth/
-│   │   └── login.py                     # Username-based session login
-│   ├── coaching/
-│   │   ├── llm.py                       # Groq LLM client (LLaMA 3.3 70B)
-│   │   ├── tts.py                       # gTTS text-to-speech wrapper
-│   │   └── voice_pipeline.py            # Form-issue detection + coaching orchestration
-│   ├── config/
-│   │   └── workout_config.py            # Exercise options, pose connections, metrics schema, LLM prompt
-│   ├── persistence/
-│   │   └── exercise_repository.py       # SQLite CRUD + schema migration
-│   ├── state/
-│   │   └── session_defaults.py          # Streamlit session_state initialisation
-│   ├── tracking/
-│   │   └── metrics.py                   # Rep/set counting, DB persistence, coaching triggers
-│   ├── ui/
-│   │   └── style_loader.py              # CSS injection + WebRTC iframe font patching
-│   └── vision/
-│       └── exercise_video_processor.py  # VideoProcessorBase: landmark detection + overlay rendering
-│
-├── static/
-│   ├── style.css                        # Global dark-theme styles
-│   └── AdobeClean.otf                   # Custom font
-│
-└── .streamlit/
-    └── config.toml                      # Streamlit dark-theme configuration
+# Run Playwright E2E tests (requires running local app)
+npx playwright install chromium
+npm run test:e2e
 ```
 
 ---
 
-## 🏋️ Supported Exercises & Metrics
-
-### Squats
-
-| Metric | Description |
-|---|---|
-| Knee Angle | Hip → Knee → Ankle angle (dominant side by visibility) |
-| Back Angle | Shoulder → Hip → Knee (forward lean check) |
-| Depth Status | `GOOD DEPTH` (≤ 100°) / `TOO HIGH` / `STANDING` |
-
-**Rep logic:** stage = `down` when knee angle < 100° → stage = `up` (rep counted) when knee angle ≥ 160°
-
----
-
-### Push-ups
-
-| Metric | Description |
-|---|---|
-| Elbow Angle | Shoulder → Elbow → Wrist |
-| Body Alignment | `Straight` (> 160°) / `Slight Bend` (> 140°) / `Poor Form` |
-| Hip Position | `LEVEL` / `SAGGING` / `PIKED UP` (± 8% midpoint tolerance) |
-
-**Rep logic:** stage = `down` when elbow < 90° → stage = `up` (rep counted) when elbow > 160°
-
----
-
-### Biceps Curls (Dumbbell)
-
-| Metric | Description |
-|---|---|
-| Elbow Angle | Shoulder → Elbow → Wrist |
-| Shoulder Stability | `STABLE` / `ELBOW DRIFTING` (6% lateral tolerance) |
-| Swing Detection | `NO SWING` / `SWINGING` (torso atan2 angle > 15°) |
-
-**Rep logic:** stage = `up` when elbow < 50° → stage = `down` (rep counted) when elbow > 160°
-
----
-
-### Shoulder Press
-
-| Metric | Description |
-|---|---|
-| Elbow Angle | Shoulder → Elbow → Wrist |
-| Arm Extension | `FULL` (> 160°) / `PARTIAL` (> 140°) / `LOW` |
-| Back Arch | `GOOD` / `ARCHED` (shoulder–hip atan2 > 15°) |
-
-**Rep logic:** stage = `down` when elbow < 90° → stage = `up` (rep counted) when elbow > 150°
-
----
-
-### Lunges
-
-| Metric | Description |
-|---|---|
-| Front Knee Angle | Hip → Knee → Ankle (leading leg — whichever knee is more bent) |
-| Torso Angle | Shoulder → Hip → Knee (upright posture check) |
-| Balance Status | `BALANCED` / `OFF BALANCE` (shoulder–hip lateral offset > 10%) |
-
-**Rep logic:** stage = `down` when front knee < 100° → stage = `up` (rep counted) when front knee > 160°
-
----
-
-## 🤖 AI Coaching Pipeline
+## Project Structure
 
 ```
-Per Frame (WebRTC async background thread)
-   │
-   ▼
-MediaPipe detects 33 body landmarks
-   │
-   ▼
-Exercise Detector processes landmarks → metrics dict
-   │
-   ▼
-Set latest_metrics (thread-safe via threading.Lock)
-
-Main Thread (Streamlit rerun every 250 ms)
-   │
-   ▼
-sync_metrics_update() reads latest_metrics and evaluates:
-   ├── Rep count updated in session_state
-   ├── Set completed?  → save to DB, fire "set_completed" event
-   ├── Workout done?   → auto-end session, fire "workout_completed" event
-   ├── No pose?        → fire "no_pose_detected" event
-   └── Form issue?     → fire "ongoing_form_check" event (5 s cooldown)
-         │
-         ▼
-   VoicePipeline.process_event()
-         │
-         ├── _find_form_issue() → human-readable issue description
-         │
-         ├── LLMCoach.give_feedback(event, issue)
-         │     └── Groq API: LLaMA 3.3 70B, temp=0.4, last 10 turns history
-         │
-         └── TextToSpeech.speak(text)
-               └── gTTS → MP3 bytes → st.audio(autoplay=True) → hidden player
-```
-
-### Coaching Events
-
-| Event | Trigger |
-|---|---|
-| `workout_started` | User clicks **Start Workout** |
-| `set_completed` | Rep counter crosses a full set boundary |
-| `workout_completed` | All target sets finished |
-| `no_pose_detected` | Pose landmarks absent from frame |
-| `ongoing_form_check` | Every render cycle with a detected form issue (5 s cooldown) |
-
----
-
-## 🗄️ Database Schema
-
-SQLite database (`data.db`) is auto-created on first run.
-
-```sql
-CREATE TABLE users (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    username   TEXT UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE exercises (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id       INTEGER NOT NULL REFERENCES users(id),
-    exercise_name TEXT    NOT NULL,
-    reps          INTEGER NOT NULL DEFAULT 0,
-    sets          INTEGER NOT NULL DEFAULT 0,
-    time          INTEGER NOT NULL DEFAULT 0,   -- seconds elapsed
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-> Records are **upserted** by `(user_id, exercise_name, DATE)` — the same exercise performed on the same day accumulates into a single row.
-
----
-
-## ⚙️ Configuration
-
-### `services/config/workout_config.py`
-
-| Constant | Purpose |
-|---|---|
-| `EXERCISE_OPTIONS` | List of exercises shown in the sidebar dropdown |
-| `POSE_CONNECTIONS` | MediaPipe landmark index pairs used to draw the skeleton overlay |
-| `METRICS_FIELDS` | Per-exercise fields and their defaults synced into `session_state` |
-| `PROMPT` | System prompt defining the AI coach's persona and response style |
-
-### `.streamlit/config.toml`
-
-```toml
-[theme]
-primaryColor             = "#444"
-backgroundColor          = "#0E1117"
-secondaryBackgroundColor = "#1e232B"
-textColor                = "#FFF"
+├── public/models/pose_landmarker_full.task  # MediaPipe Tasks Vision model asset
+├── src/
+│   ├── proxy.ts                             # Next.js 16 route protection guard
+│   ├── app/                                 # App Router pages and Route Handlers
+│   │   ├── (auth)/                          # Register, Login, Reset Password
+│   │   ├── (dashboard)/                     # Dashboard, Workout, History, Analytics, Profile
+│   │   ├── (marketing)/                     # Landing page with 3D Pose Avatar Rig
+│   │   └── api/                             # REST APIs (Auth, Workouts, Analytics, AI Coaching)
+│   ├── components/                          # UI, Layouts, AppShell, Three.js, Workout Views
+│   ├── config/exercises.ts                  # Exercise parameters & MediaPipe configurations
+│   ├── features/                            # Vision controller, camera, workout state machine
+│   ├── models/                              # Mongoose schemas (User, RefreshSession, Workout)
+│   ├── repositories/                        # Mongo repositories + in-memory store
+│   └── services/                            # Auth, Coaching, Analytics, and 5 Exercise Detectors
+└── tests/                                   # Vitest and Playwright test suites
 ```
 
 ---
 
-## 🔌 Technology Stack
+## License
 
-| Layer | Technology |
-|---|---|
-| **UI Framework** | [Streamlit](https://streamlit.io/) 1.54.0 |
-| **Video Streaming** | [streamlit-webrtc](https://github.com/whitphx/streamlit-webrtc) 0.64.5 |
-| **Pose Estimation** | [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker) 0.10.14 — Pose Landmarker Full (float16) |
-| **Video Processing** | [OpenCV Headless](https://pypi.org/project/opencv-python-headless/) 4.10.0 + PyAV |
-| **LLM** | [Groq](https://groq.com/) API — LLaMA 3.3 70B Versatile |
-| **Text-to-Speech** | [gTTS](https://gtts.readthedocs.io/) 2.5.3 (Google TTS) |
-| **Database** | SQLite 3 (Python built-in `sqlite3`) |
-| **Data Processing** | [Pandas](https://pandas.pydata.org/) 2.2.3 |
-| **Environment Config** | [python-dotenv](https://pypi.org/project/python-dotenv/) 1.2.2 |
-
----
-
-## 🌐 Deployment (Streamlit Community Cloud)
-
-1. Push your repository to GitHub. Ensure `data.db`, `.env`, and `.streamlit/config.toml` are in `.gitignore`.
-2. Go to [share.streamlit.io](https://share.streamlit.io) and connect your GitHub repo.
-3. Set the **main file path** to `app.py`.
-4. Add your `GROQ_API_KEY` under **Advanced settings → Secrets**.
-5. The `packages.txt` file is automatically detected and used to install system-level dependencies.
-6. The `pose_landmarker_full.task` model is automatically downloaded on first boot if not present.
-
----
-
-## 🧪 Development Notes
-
-- The WebRTC video stream requires **HTTPS** in production or **localhost** for local development.
-- Voice coaching enforces a **5-second cooldown** between form-correction cues.
-- The LLM retains the **last 10 turns** of conversation history for coaching continuity.
-- Pose landmarks require a minimum **visibility score of 0.7** before any metric is calculated.
-- The video processor runs in an **async background thread**; metrics are safely shared via a `threading.Lock`.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
----
-
-## 🙏 Acknowledgements
-
-- [Google MediaPipe](https://ai.google.dev/edge/mediapipe) — Pose Landmarker model
-- [Groq](https://groq.com/) — Ultra-fast LLM inference
-- [Streamlit](https://streamlit.io/) & [streamlit-webrtc](https://github.com/whitphx/streamlit-webrtc) — Browser-based real-time video pipeline
+This project is licensed under the MIT License.
