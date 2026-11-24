@@ -32,7 +32,7 @@ flowchart TD
     end
 
     subgraph Server ["Next.js 16 Server (Node.js Runtime)"]
-        I[Next.js Proxy src/proxy.ts] --> J[App Router Pages & Shell]
+        I[Next.js Proxy proxy.ts] --> J[App Router Pages & Shell]
         K[Route Handlers /api/*] --> L[CSRF & Rate Limit Guards]
         L --> M[Auth & Workout Domain Services]
         M --> N[Mongoose Data Layer]
@@ -82,49 +82,48 @@ AI-Exercise-Tutor/
 ├── public/
 │   └── models/
 │       └── pose_landmarker_full.task # 9.4 MB MediaPipe Pose Landmarker model asset
-├── src/
-│   ├── proxy.ts                # Next.js 16 route protection proxy
-│   ├── app/                    # App Router pages and Route Handlers
-│   │   ├── (auth)/             # Login, register, forgot-password, reset-password
-│   │   ├── (dashboard)/        # Dashboard, workout, history, analytics, profile
-│   │   ├── (marketing)/        # Landing page with 3D avatar & GSAP scroll
-│   │   ├── api/                # REST Route Handlers (auth, users, workouts, ai, health)
-│   │   └── globals.css         # Tailwind v4 theme and color variables
-│   ├── components/
-│   │   ├── analytics/          # Recharts volume, progression, and distribution charts
-│   │   ├── animations/         # Page and landing GSAP/Framer choreography
-│   │   ├── dashboard/          # KPI metric cards, streak tracker, quick-actions
-│   │   ├── layout/             # Responsive AppShell (tabs + hamburger), brand mark
-│   │   ├── profile/            # User profile, password, and preference forms
-│   │   ├── three/              # Three.js 3D avatar rig and SVG fallback wireframe
-│   │   ├── ui/                 # Reusable Radix UI design tokens (button, card, dialog)
-│   │   └── workout/            # Live session view, history tables, setup forms
-│   ├── config/
-│   │   └── exercises.ts        # Exercise definitions, thresholds, MediaPipe constants
-│   ├── features/
-│   │   ├── auth/               # Client-side auth API client and token refresher
-│   │   ├── exercise/           # Camera controller, MediaPipe loader, skeleton renderer
-│   │   └── workout/            # Workout state machine and voice feedback controller
-│   ├── lib/
-│   │   ├── cookies.ts          # Auth cookie setters (gg_access, gg_refresh)
-│   │   ├── csrf.ts             # Origin / Referer validation guard
-│   │   ├── env.ts              # Zod server environment parser and validator
-│   │   ├── errors.ts           # Centralized AppError and API JSON envelopes
-│   │   ├── jwt.ts              # jose JWT signing and verification utilities
-│   │   ├── logger.ts           # JSON structured logger with secret redaction
-│   │   ├── mongodb.ts          # Mongoose connection manager and pooling
-│   │   ├── password.ts         # Argon2id password hasher with timing guard
-│   │   ├── rate-limit.ts       # Sliding-window rate limiter
-│   │   └── validations/        # Zod validation schemas (auth, coaching, workout)
-│   ├── models/                 # Mongoose database models (User, RefreshSession, Workout)
-│   ├── repositories/           # Repository pattern data access + in-memory store
-│   ├── services/
-│   │   ├── analytics/          # Streak calculator and bucket aggregators
-│   │   ├── auth/               # Authentication, session rotation, reset flows
-│   │   ├── coaching/           # Groq AI coaching service with multi-model fallback
-│   │   ├── exercise/           # Angles, detector factory, 5 exercise detector classes
-│   │   └── workout/            # Idempotent workout persistence service
-│   └── types/                  # Shared TypeScript interfaces and DTOs
+├── proxy.ts                    # Next.js 16 route protection proxy
+├── app/                        # App Router pages and Route Handlers
+│   ├── (auth)/                 # Login, register, forgot-password, reset-password
+│   ├── (dashboard)/            # Dashboard, workout, history, analytics, profile
+│   ├── page.tsx                # Landing page with 3D avatar & GSAP scroll
+│   ├── api/                    # REST Route Handlers (auth, users, workouts, ai, health)
+│   └── globals.css             # Tailwind v4 theme and color variables
+├── components/
+│   ├── analytics/              # Recharts volume, progression, and distribution charts
+│   ├── animations/             # Page and landing GSAP/Framer choreography
+│   ├── dashboard/              # KPI metric cards, streak tracker, quick-actions
+│   ├── layout/                 # Responsive AppShell (tabs + hamburger), brand mark
+│   ├── profile/                # User profile, password, and preference forms
+│   ├── three/                  # Three.js 3D avatar rig and SVG fallback wireframe
+│   ├── ui/                     # Reusable Radix UI design tokens (button, card, dialog)
+│   └── workout/                # Live session view, history tables, setup forms
+├── config/
+│   └── exercises.ts            # Exercise definitions, thresholds, MediaPipe constants
+├── features/
+│   ├── auth/                   # Client-side auth API client and token refresher
+│   ├── exercise/               # Camera controller, MediaPipe loader, skeleton renderer
+│   └── workout/                # Workout state machine and voice feedback controller
+├── lib/
+│   ├── cookies.ts              # Auth cookie setters (gg_access, gg_refresh)
+│   ├── csrf.ts                 # Origin / Referer validation guard
+│   ├── env.ts                  # Zod server environment parser and validator
+│   ├── errors.ts               # Centralized AppError and API JSON envelopes
+│   ├── jwt.ts                  # jose JWT signing and verification utilities
+│   ├── logger.ts               # JSON structured logger with secret redaction
+│   ├── mongodb.ts              # Mongoose connection manager and pooling
+│   ├── password.ts             # Argon2id password hasher with timing guard
+│   ├── rate-limit.ts           # Sliding-window rate limiter
+│   └── validations/            # Zod validation schemas (auth, coaching, workout)
+├── models/                     # Mongoose database models (User, RefreshSession, Workout)
+├── repositories/               # Repository pattern data access + in-memory store
+├── services/
+│   ├── analytics/              # Streak calculator and bucket aggregators
+│   ├── auth/                   # Authentication, session rotation, reset flows
+│   ├── coaching/               # Groq AI coaching service with multi-model fallback
+│   ├── exercise/               # Angles, detector factory, 5 exercise detector classes
+│   └── workout/                # Idempotent workout persistence service
+├── types/                      # Shared TypeScript interfaces and DTOs
 └── tests/                      # Unit, integration, and E2E test suites
 ```
 
@@ -133,11 +132,11 @@ AI-Exercise-Tutor/
 ## 5. Security & Authentication Architecture
 
 GymGenie implements defense-in-depth security:
-1. **Route Protection (`src/proxy.ts`):** Checks for presence of `gg_access` cookie before letting clients hit `/dashboard`, `/workout/*`, `/history/*`, `/analytics`, or `/profile`. Unauthenticated visitors are redirected to `/login?next=...`.
-2. **Server-Side Session Verification (`src/services/auth/session-guard.ts`):** Every API Route Handler and Server Component independently parses and verifies the cryptographic signature of the access token using `verifyAccessToken()` (`jose`).
-3. **Argon2id Password Hashing (`src/lib/password.ts`):** Passwords are never stored in plaintext. If an unverified user logs in, a dummy Argon2id hash is computed to equalize response timing and prevent user enumeration.
-4. **Token Family Rotation (`src/services/auth/auth.service.ts`):** Each login creates a `sessionId`. Every refresh atomically rotates the refresh token. If a rotated token is presented again, the entire token family is revoked immediately to neutralize session hijacking.
-5. **CSRF Protection (`src/lib/csrf.ts`):** Enforces strict same-origin verification across all mutation HTTP methods (`POST`, `PATCH`, `DELETE`).
+1. **Route Protection (`proxy.ts`):** Checks for presence of `gg_access` cookie before letting clients hit `/dashboard`, `/workout/*`, `/history/*`, `/analytics`, or `/profile`. Unauthenticated visitors are redirected to `/login?next=...`.
+2. **Server-Side Session Verification (`services/auth/session-guard.ts`):** Every API Route Handler and Server Component independently parses and verifies the cryptographic signature of the access token using `verifyAccessToken()` (`jose`).
+3. **Argon2id Password Hashing (`lib/password.ts`):** Passwords are never stored in plaintext. If an unverified user logs in, a dummy Argon2id hash is computed to equalize response timing and prevent user enumeration.
+4. **Token Family Rotation (`services/auth/auth.service.ts`):** Each login creates a `sessionId`. Every refresh atomically rotates the refresh token. If a rotated token is presented again, the entire token family is revoked immediately to neutralize session hijacking.
+5. **CSRF Protection (`lib/csrf.ts`):** Enforces strict same-origin verification across all mutation HTTP methods (`POST`, `PATCH`, `DELETE`).
 
 ```mermaid
 sequenceDiagram
@@ -204,7 +203,7 @@ flowchart TD
     D -- Success within 4s --> E[Sanitize Text & Return Cue]
     D -- Error / Timeout --> F[Tier 2: Fallback to openai/gpt-oss-20b]
     F -- Success within 4s --> E
-    F -- Error / Timeout --> G[Tier 3: Local Deterministic Cues src/services/coaching/prompts.ts]
+    F -- Error / Timeout --> G[Tier 3: Local Deterministic Cues services/coaching/prompts.ts]
     G --> E
     E --> H[Browser Speaks Cue via SpeechSynthesis]
 ```

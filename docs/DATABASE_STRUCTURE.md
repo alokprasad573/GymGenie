@@ -10,7 +10,7 @@ GymGenie uses **MongoDB Atlas** as its persistent system of record, managed thro
 
 A dual-mode storage pattern is built directly into the data access layer:
 - **Production Mode (MongoDB):** When `ATLAS_URI` or `MONGODB_URI` is provided, Mongoose manages connection pooling (pool size 10), automated index builds, and replica-set read/write semantics.
-- **In-Memory Fallback Mode (`src/repositories/memory-store.ts`):** When running in air-gapped test environments, local offline setups, or during transient database outages, the application automatically falls back to an in-memory repository store without crashing.
+- **In-Memory Fallback Mode (`repositories/memory-store.ts`):** When running in air-gapped test environments, local offline setups, or during transient database outages, the application automatically falls back to an in-memory repository store without crashing.
 
 ```mermaid
 erDiagram
@@ -75,31 +75,31 @@ erDiagram
 
 | Attribute | Specification | Source Code Reference |
 |---|---|---|
-| **DBMS** | MongoDB 6.0+ / MongoDB Atlas | `src/lib/mongodb.ts` |
-| **Driver / ODM** | Mongoose `^8.19.0` | `package.json`, `src/lib/mongodb.ts` |
-| **Connection Pooling** | `maxPoolSize: 10`, `socketTimeoutMS: 15_000` | `src/lib/mongodb.ts:61-64` |
-| **Server Timeout** | `serverSelectionTimeoutMS: 5000` (800ms for localhost) | `src/lib/mongodb.ts:62-63` |
-| **Runtime Enforcement** | Node.js Server Only (`import "server-only"`) | `src/lib/mongodb.ts:1` |
-| **Global Connection Cache** | `globalThis.__gymgenieMongooseCache` | `src/lib/mongodb.ts:13-26` |
+| **DBMS** | MongoDB 6.0+ / MongoDB Atlas | `lib/mongodb.ts` |
+| **Driver / ODM** | Mongoose `^8.19.0` | `package.json`, `lib/mongodb.ts` |
+| **Connection Pooling** | `maxPoolSize: 10`, `socketTimeoutMS: 15_000` | `lib/mongodb.ts:61-64` |
+| **Server Timeout** | `serverSelectionTimeoutMS: 5000` (800ms for localhost) | `lib/mongodb.ts:62-63` |
+| **Runtime Enforcement** | Node.js Server Only (`import "server-only"`) | `lib/mongodb.ts:1` |
+| **Global Connection Cache** | `globalThis.__gymgenieMongooseCache` | `lib/mongodb.ts:13-26` |
 
 ---
 
 ## 3. Database Configuration
 
-Database connection is established through `connectToDatabase()` in `src/lib/mongodb.ts`. The connection string is resolved in order:
+Database connection is established through `connectToDatabase()` in `lib/mongodb.ts`. The connection string is resolved in order:
 1. `env.DATABASE_URI`
 2. `env.ATLAS_URI`
 3. `env.MONGODB_URI`
 
-Valid connection strings must start with either `mongodb://` or `mongodb+srv://`. If the connection string is absent or unreachable, the application logs a warning and routes queries to `src/repositories/memory-store.ts`.
+Valid connection strings must start with either `mongodb://` or `mongodb+srv://`. If the connection string is absent or unreachable, the application logs a warning and routes queries to `repositories/memory-store.ts`.
 
 ---
 
 ## 4. Collections Documentation
 
 ### 4.1 Collection: `users`
-- **Model File:** `src/models/User.ts`
-- **Repository Interface:** `src/repositories/user.repository.ts`
+- **Model File:** `models/User.ts`
+- **Repository Interface:** `repositories/user.repository.ts`
 - **Mongoose Collection Name:** `users`
 
 #### Field-Level Schema
@@ -131,8 +131,8 @@ Valid connection strings must start with either `mongodb://` or `mongodb+srv://`
 ---
 
 ### 4.2 Collection: `refreshSessions`
-- **Model File:** `src/models/RefreshSession.ts`
-- **Repository Interface:** `src/repositories/session.repository.ts`
+- **Model File:** `models/RefreshSession.ts`
+- **Repository Interface:** `repositories/session.repository.ts`
 - **Mongoose Collection Name:** `refreshSessions`
 
 Implements **RFC 6749 Token Family Rotation** with automatic reuse detection to invalidate rogue replay attempts.
@@ -158,8 +158,8 @@ Implements **RFC 6749 Token Family Rotation** with automatic reuse detection to 
 ---
 
 ### 4.3 Collection: `workouts`
-- **Model File:** `src/models/Workout.ts`
-- **Repository Interface:** `src/repositories/workout.repository.ts`
+- **Model File:** `models/Workout.ts`
+- **Repository Interface:** `repositories/workout.repository.ts`
 - **Mongoose Collection Name:** `workouts`
 
 Stores completed and interrupted workout sessions with aggregated totals and per-set breakdowns.
@@ -225,7 +225,7 @@ Collection: workouts
 ## 6. Data Access Patterns & Core Queries
 
 ### 6.1 Atomic Refresh Token Rotation
-Implemented in `src/repositories/session.repository.ts:66`:
+Implemented in `repositories/session.repository.ts:66`:
 ```typescript
 await RefreshSessionModel.findOneAndUpdate(
   {
@@ -246,7 +246,7 @@ await RefreshSessionModel.findOneAndUpdate(
 If this query returns `null`, the system inspects `tokenHash` to determine if a previously rotated token was submitted. If so, `revokeSessionFamily(sessionId)` is immediately executed, invalidating all sessions in that family.
 
 ### 6.2 Idempotent Workout Persistence
-Implemented in `src/repositories/workout.repository.ts:88`:
+Implemented in `repositories/workout.repository.ts:88`:
 ```typescript
 // 1. Check existing record
 const existing = await WorkoutModel.findOne({ userId, idempotencyKey });
@@ -266,7 +266,7 @@ try {
 ```
 
 ### 6.3 Aggregated User Analytics
-Implemented in `src/services/analytics/analytics.service.ts`:
+Implemented in `services/analytics/analytics.service.ts`:
 - **Overview KPIs:** Queries `listForUserInRange(userId, from365, now)` to calculate total workouts, completion count, total reps, cumulative duration, and favorite exercise.
 - **Streak Calculation:** Queries `listAllDatesForUser(userId, 365)` returning an array of unique UTC days. Calculates consecutive workout days anchored on today or yesterday.
 - **Volume & Progression:** Aggregates daily activity points into weekly (7-90 days) and monthly (1-12 months) time buckets.

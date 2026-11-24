@@ -6,7 +6,7 @@
 
 ## 1. API Architecture & Global Conventions
 
-- **Architecture:** Next.js 16 App Router Route Handlers (`src/app/api/**/route.ts`).
+- **Architecture:** Next.js 16 App Router Route Handlers (`app/api/**/route.ts`).
 - **Base URL:** `http://localhost:3000` (development) or `process.env.APP_URL`.
 - **Runtime:** Strictly `nodejs` (`export const runtime = "nodejs"`).
 - **Caching:** Dynamic data endpoints enforce `export const dynamic = "force-dynamic"`.
@@ -14,7 +14,7 @@
 
 ### 1.1 Standard Response Envelopes
 
-#### Success Envelope (`src/lib/errors.ts:48`)
+#### Success Envelope (`lib/errors.ts:48`)
 ```json
 {
   "data": { ... },
@@ -22,7 +22,7 @@
 }
 ```
 
-#### Error Envelope (`src/lib/errors.ts:39`)
+#### Error Envelope (`lib/errors.ts:39`)
 ```json
 {
   "error": {
@@ -55,13 +55,13 @@
 
 ## 2. Security, CSRF & Rate Limiting
 
-### 2.1 CSRF Defense (`src/lib/csrf.ts`)
+### 2.1 CSRF Defense (`lib/csrf.ts`)
 All state-modifying requests (`POST`, `PATCH`, `DELETE`) call `assertSameOriginRequest(request)`:
 - Rejects requests if `Sec-Fetch-Site: cross-site`.
 - Verifies `Origin` or `Referer` matches `APP_URL`, `Host`, or `X-Forwarded-Host`.
 - Production requires an `Origin` header whenever auth cookies are present.
 
-### 2.2 Rate Limiting Architecture (`src/lib/rate-limit.ts`)
+### 2.2 Rate Limiting Architecture (`lib/rate-limit.ts`)
 In-memory sliding-window counter tracking client IP or authenticated User ID:
 
 | Route | Bucket | Window | Max Requests | Key |

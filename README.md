@@ -61,7 +61,7 @@ Comprehensive, production-grade technical documentation is available:
 - **Multi-Tier AI Coaching:**
   - **Tier 1 (Primary Model):** `openai/gpt-oss-120b` via server-side Groq SDK.
   - **Tier 2 (Fallback Model):** `openai/gpt-oss-20b` invoked automatically if primary model times out (4s) or encounters provider errors.
-  - **Tier 3 (Local Cues):** Deterministic corrective voice cues from `src/services/coaching/prompts.ts` if offline.
+  - **Tier 3 (Local Cues):** Deterministic corrective voice cues from `services/coaching/prompts.ts` if offline.
 - **Browser Spoken Feedback:** Hands-free audible cues delivered with zero network latency using `window.speechSynthesis`.
 - **Interactive 3D Avatar Wireframe:** Three.js / React Three Fiber interactive wireframe rig with dynamic mouse/pointer yaw and pitch responsiveness, plus SVG fallback for reduced motion or non-WebGL devices.
 - **Robust Authentication & Security:**
@@ -70,7 +70,7 @@ Comprehensive, production-grade technical documentation is available:
   - Automatic session-family revocation upon refresh token reuse detection.
   - Self-service password reset with single-use SHA-256 tokens.
 - **Analytics & History:** Visualized via Recharts: weekly volume bars, monthly duration area charts, exercise distribution donuts, and rep progression curves.
-- **Fail-Safe Data Layer:** Automatic seamless fallback to an in-memory repository store (`src/repositories/memory-store.ts`) when MongoDB is disconnected or offline.
+- **Fail-Safe Data Layer:** Automatic seamless fallback to an in-memory repository store (`repositories/memory-store.ts`) when MongoDB is disconnected or offline.
 
 ---
 
@@ -194,19 +194,18 @@ npm run test:e2e
 
 ```
 ├── public/models/pose_landmarker_full.task  # MediaPipe Tasks Vision model asset
-├── src/
-│   ├── proxy.ts                             # Next.js 16 route protection guard
-│   ├── app/                                 # App Router pages and Route Handlers
-│   │   ├── (auth)/                          # Register, Login, Reset Password
-│   │   ├── (dashboard)/                     # Dashboard, Workout, History, Analytics, Profile
-│   │   ├── (marketing)/                     # Landing page with 3D Pose Avatar Rig
-│   │   └── api/                             # REST APIs (Auth, Workouts, Analytics, AI Coaching)
-│   ├── components/                          # UI, Layouts, AppShell, Three.js, Workout Views
-│   ├── config/exercises.ts                  # Exercise parameters & MediaPipe configurations
-│   ├── features/                            # Vision controller, camera, workout state machine
-│   ├── models/                              # Mongoose schemas (User, RefreshSession, Workout)
-│   ├── repositories/                        # Mongo repositories + in-memory store
-│   └── services/                            # Auth, Coaching, Analytics, and 5 Exercise Detectors
+├── proxy.ts                                 # Next.js 16 route protection guard
+├── app/                                     # App Router pages and Route Handlers
+│   ├── (auth)/                              # Register, Login, Reset Password
+│   ├── (dashboard)/                         # Dashboard, Workout, History, Analytics, Profile
+│   ├── page.tsx                             # Landing page with 3D Pose Avatar Rig
+│   └── api/                                 # REST APIs (Auth, Workouts, Analytics, AI Coaching)
+├── components/                              # UI, Layouts, AppShell, Three.js, Workout Views
+├── config/exercises.ts                      # Exercise parameters & MediaPipe configurations
+├── features/                                # Vision controller, camera, workout state machine
+├── models/                                  # Mongoose schemas (User, RefreshSession, Workout)
+├── repositories/                            # Mongo repositories + in-memory store
+├── services/                                # Auth, Coaching, Analytics, and 5 Exercise Detectors
 └── tests/                                   # Vitest and Playwright test suites
 ```
 
