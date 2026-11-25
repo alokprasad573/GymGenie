@@ -121,16 +121,11 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
   }
 
   return (
-    <PageChoreography
-      revealKey={`${page}-${exerciseFilter}-${statusFilter}-${rangeFilter}-${loading ? "loading" : "ready"}`}
-      className="space-y-6"
-    >
-      <div
-        data-page-header
-        className="flex flex-wrap items-end justify-between gap-4"
-      >
+    <PageChoreography className="space-y-4">
+      {/* Header Bento Cell */}
+      <div className="bento-cell  flex flex-wrap items-end justify-between gap-4 p-5 sm:p-6">
         <div>
-          <h1 className="text-2xl font-medium tracking-[-0.02em] text-ink-primary sm:text-[30px]">
+          <h1 className="mt-1 text-2xl font-medium tracking-[-0.025em] text-ink-primary sm:text-[30px]">
             Workout history
           </h1>
           <p className="mt-1 text-sm text-ink-secondary">
@@ -142,69 +137,79 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
         </Button>
       </div>
 
-      {/* Filters */}
-      <div data-page-header className="grid gap-3 sm:grid-cols-3 lg:max-w-2xl">
-        <Select
-          value={exerciseFilter}
-          onValueChange={(v) => {
-            setPage(1);
-            setExerciseFilter(v);
-          }}
-        >
-          <SelectTrigger aria-label="Filter by exercise">
-            <SelectValue placeholder="All exercises" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All exercises</SelectItem>
-            {EXERCISE_ORDER.map((id) => (
-              <SelectItem key={id} value={id}>
-                {EXERCISES[id].shortLabel}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Filters Bento Toolbar */}
+      <div className="bento-cell grid gap-3 p-4 sm:grid-cols-3 lg:grid-cols-12 lg:items-center">
+        <div className="lg:col-span-3">
+          <Select
+            value={exerciseFilter}
+            onValueChange={(v) => {
+              setPage(1);
+              setExerciseFilter(v);
+            }}
+          >
+            <SelectTrigger aria-label="Filter by exercise">
+              <SelectValue placeholder="All exercises" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All exercises</SelectItem>
+              {EXERCISE_ORDER.map((id) => (
+                <SelectItem key={id} value={id}>
+                  {EXERCISES[id].shortLabel}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Select
-          value={statusFilter}
-          onValueChange={(v) => {
-            setPage(1);
-            setStatusFilter(v);
-          }}
-        >
-          <SelectTrigger aria-label="Filter by status">
-            <SelectValue placeholder="All statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-            <SelectItem value="INTERRUPTED">Interrupted</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="lg:col-span-3">
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => {
+              setPage(1);
+              setStatusFilter(v);
+            }}
+          >
+            <SelectTrigger aria-label="Filter by status">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All statuses</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectItem value="INTERRUPTED">Interrupted</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Select
-          value={rangeFilter}
-          onValueChange={(v) => {
-            setPage(1);
-            setRangeFilter(v);
-          }}
-        >
-          <SelectTrigger aria-label="Filter by date range">
-            <SelectValue placeholder="All time" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All time</SelectItem>
-            <SelectItem value="7">Last 7 days</SelectItem>
-            <SelectItem value="30">Last 30 days</SelectItem>
-            <SelectItem value="90">Last 90 days</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="lg:col-span-3">
+          <Select
+            value={rangeFilter}
+            onValueChange={(v) => {
+              setPage(1);
+              setRangeFilter(v);
+            }}
+          >
+            <SelectTrigger aria-label="Filter by date range">
+              <SelectValue placeholder="All time" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All time</SelectItem>
+              <SelectItem value="7">Last 7 days</SelectItem>
+              <SelectItem value="30">Last 30 days</SelectItem>
+              <SelectItem value="90">Last 90 days</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="hidden text-right  text-xs text-ink-muted tabular-nums lg:col-span-3 lg:block">
+          {data ? `${data.total} total sessions` : "Session log"}
+        </div>
       </div>
 
       {/* Content */}
       {loading ? (
         <div className="space-y-2.5">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
+            <Skeleton key={i} className="h-16 w-full rounded-[14px]" />
           ))}
         </div>
       ) : error ? (
@@ -237,12 +242,12 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
         />
       ) : (
         <>
-          <Card data-stagger-item className="overflow-hidden">
+          <Card className="overflow-hidden">
             <CardContent className="p-0">
               {/* Column headers on tablet & desktop */}
               <div
                 aria-hidden="true"
-                className="hidden border-b border-[rgba(255,255,255,0.08)] px-5 py-3.5 text-xs font-medium text-ink-muted md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,1.25fr)_72px_72px_92px_116px_112px] md:items-center md:gap-3"
+                className="hidden border-b border-[rgba(255,255,255,0.08)] bg-canvas/60 px-5 py-3.5  text-[11px] font-medium text-ink-muted md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,1.25fr)_72px_72px_92px_116px_112px] md:items-center md:gap-3"
               >
                 <span>Exercise</span>
                 <span>Date</span>
@@ -272,7 +277,7 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
                       </Link>
                     </div>
 
-                    {/* Status (top-right on mobile, 6th column on tablet/desktop) */}
+                    {/* Status */}
                     <div className="shrink-0 justify-self-end md:order-6 md:justify-self-start">
                       <Badge
                         variant={
@@ -286,17 +291,17 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
                     </div>
 
                     {/* Date */}
-                    <div className="col-span-2 text-xs text-ink-secondary md:order-2 md:col-span-1 md:text-sm">
+                    <div className="col-span-2  text-xs text-ink-secondary md:order-2 md:col-span-1">
                       {formatShortDate(w.startedAt)}
                     </div>
 
-                    {/* Reps / Sets / Duration (compact 3-col strip on mobile, individual columns on md+) */}
-                    <div className="col-span-2 grid grid-cols-3 gap-2 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas px-3 py-2 text-xs md:contents md:rounded-none md:border-0 md:bg-transparent md:p-0 md:text-sm">
+                    {/* Reps / Sets / Duration */}
+                    <div className="bento-well col-span-2 grid grid-cols-3 gap-2 px-3 py-2 text-xs md:contents md:rounded-none md:border-0 md:bg-transparent md:p-0 md:text-sm">
                       <div className="md:order-3 md:text-right">
                         <span className="block text-[11px] text-ink-muted md:hidden">
                           Reps
                         </span>
-                        <span className="font-medium text-ink-primary tabular-nums">
+                        <span className=" font-medium text-ink-primary tabular-nums">
                           {w.totalReps}
                         </span>
                       </div>
@@ -304,7 +309,7 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
                         <span className="block text-[11px] text-ink-muted md:hidden">
                           Sets
                         </span>
-                        <span className="font-medium text-ink-secondary tabular-nums">
+                        <span className=" font-medium text-ink-secondary tabular-nums">
                           {w.totalSets}/{w.targetSets}
                         </span>
                       </div>
@@ -312,7 +317,7 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
                         <span className="block text-[11px] text-ink-muted md:hidden">
                           Duration
                         </span>
-                        <span className="font-medium text-ink-secondary tabular-nums">
+                        <span className=" font-medium text-ink-secondary tabular-nums">
                           {formatDuration(w.durationSeconds)}
                         </span>
                       </div>
@@ -322,7 +327,7 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
                     <div className="col-span-2 flex items-center justify-between gap-2 pt-0.5 md:order-7 md:col-span-1 md:justify-end md:pt-0">
                       <Link
                         href={`/history/${w.id}`}
-                        className="inline-flex min-h-9 items-center rounded-[6px] px-2.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-elevated hover:text-ink-primary md:px-2"
+                        className="inline-flex min-h-9 items-center rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-canvas px-2.5 text-xs font-medium text-ink-secondary transition-colors hover:border-[rgba(255,255,255,0.16)] hover:text-ink-primary md:px-2.5"
                       >
                         Details
                       </Link>
@@ -343,12 +348,9 @@ export function HistoryView({ initialData, initialError }: HistoryViewProps) {
             </CardContent>
           </Card>
 
-          {/* Pagination */}
-          <div
-            data-stagger-item
-            className="flex flex-wrap items-center justify-between gap-3 text-xs text-ink-secondary"
-          >
-            <span className="font-medium tabular-nums">
+          {/* Pagination Bento Bar */}
+          <div className="bento-cell flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-xs text-ink-secondary">
+            <span className=" font-medium tabular-nums">
               Page {data.page} of {Math.max(1, data.totalPages)} · {data.total}{" "}
               sessions
             </span>

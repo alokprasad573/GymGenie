@@ -65,12 +65,33 @@ export function ExerciseRigPreview({
     detectWebGLSupport,
     () => false
   );
-  const canRender3D = !reducedMotion && !paused && webglSupported;
+  const [hydrated3D, setHydrated3D] = React.useState(false);
+
+  // Defer WebGL canvas mounting until browser idle so LCP and initial paint stay instant
+  React.useEffect(() => {
+    if (reducedMotion || paused || !webglSupported || hydrated3D) {
+      return;
+    }
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof win.requestIdleCallback === "function") {
+      const id = win.requestIdleCallback(() => setHydrated3D(true), {
+        timeout: 450,
+      });
+      return () => win.cancelIdleCallback?.(id);
+    }
+    const timer = window.setTimeout(() => setHydrated3D(true), 120);
+    return () => window.clearTimeout(timer);
+  }, [reducedMotion, paused, webglSupported, hydrated3D]);
+
+  const canRender3D = !reducedMotion && !paused && webglSupported && hydrated3D;
 
   return (
     <div
       className={cn(
-        "relative flex h-full w-full items-center justify-center overflow-hidden rounded-[8px] bg-canvas",
+        "relative flex h-full w-full items-center justify-center overflow-hidden rounded-[10px] bg-canvas",
         className
       )}
     >
@@ -81,7 +102,7 @@ export function ExerciseRigPreview({
           compact={compact}
         />
       ) : (
-        <StaticPoseWireframe exercise={exercise} />
+        <StaticPoseWireframe exercise={exercise} className="bg-transparent" />
       )}
     </div>
   );

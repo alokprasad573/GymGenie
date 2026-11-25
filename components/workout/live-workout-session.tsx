@@ -530,9 +530,9 @@ export function LiveWorkoutSession() {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Top session bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-4">
+      {/* Top BentoGraph Session HUD Bar */}
+      <div className="bento-cell  flex flex-wrap items-center justify-between gap-3 px-5 py-4">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-xl font-medium tracking-[-0.02em] text-ink-primary sm:text-2xl">
             {exerciseDef.label}
@@ -552,7 +552,7 @@ export function LiveWorkoutSession() {
             {lifecycleLabel[state.lifecycle]}
           </Badge>
           {fps > 0 && state.lifecycle !== "WORKOUT_COMPLETED" ? (
-            <span className="text-xs font-medium text-ink-muted tabular-nums">
+            <span className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-canvas px-2 py-0.5  text-[11px] font-medium text-ink-secondary tabular-nums">
               {fps} fps
             </span>
           ) : null}
@@ -588,8 +588,7 @@ export function LiveWorkoutSession() {
       {state.lifecycle === "WORKOUT_COMPLETED" ? (
         <PageChoreography revealKey="workout-summary">
           <Card
-            data-stagger-item
-            className="gg-stage-frame mx-auto max-w-2xl"
+            className="mx-auto max-w-2xl"
           >
             <CardHeader>
               <div className="flex items-center justify-between gap-2">
@@ -610,36 +609,27 @@ export function LiveWorkoutSession() {
                     : "Interrupted"}
                 </Badge>
               </div>
-              <CardDescription>
+              <CardDescription className=" text-xs">
                 {exerciseDef.label} · {formatDuration(elapsedSeconds)} active time
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <div
-                  data-stagger-item
-                  className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-canvas p-4"
-                >
+                <div className="bento-well p-4">
                   <span className="text-xs text-ink-muted">Total reps</span>
-                  <p className="mt-1 text-2xl font-medium text-accent tabular-nums">
+                  <p className="mt-1  text-2xl font-medium text-accent tabular-nums">
                     {state.totalReps}
                   </p>
                 </div>
-                <div
-                  data-stagger-item
-                  className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-canvas p-4"
-                >
+                <div className="bento-well p-4">
                   <span className="text-xs text-ink-muted">Sets logged</span>
-                  <p className="mt-1 text-2xl font-medium text-ink-primary tabular-nums">
+                  <p className="mt-1  text-2xl font-medium text-ink-primary tabular-nums">
                     {state.completedSets.length} / {state.config.totalSets}
                   </p>
                 </div>
-                <div
-                  data-stagger-item
-                  className="col-span-2 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-canvas p-4 sm:col-span-1"
-                >
+                <div className="bento-well col-span-2 p-4 sm:col-span-1">
                   <span className="text-xs text-ink-muted">Active duration</span>
-                  <p className="mt-1 text-2xl font-medium text-ink-primary tabular-nums">
+                  <p className="mt-1  text-2xl font-medium text-ink-primary tabular-nums">
                     {formatTimerClock(elapsedSeconds)}
                   </p>
                 </div>
@@ -647,17 +637,17 @@ export function LiveWorkoutSession() {
 
               {state.completedSets.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-xs text-ink-muted">Set breakdown</p>
-                  <div className="divide-y divide-[rgba(255,255,255,0.06)] rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-canvas">
+                  <p className=" text-xs text-ink-muted">Set breakdown</p>
+                  <div className="bento-well divide-y divide-[rgba(255,255,255,0.06)]">
                     {state.completedSets.map((s) => (
                       <div
                         key={s.setNumber}
                         className="flex items-center justify-between px-4 py-2.5 text-sm"
                       >
-                        <span className="text-ink-secondary">
-                          Set {s.setNumber}
+                        <span className=" text-xs text-ink-secondary">
+                          Set {String(s.setNumber).padStart(2, "0")}
                         </span>
-                        <span className="font-medium text-ink-primary tabular-nums">
+                        <span className=" font-medium text-ink-primary tabular-nums">
                           {s.reps} reps
                         </span>
                       </div>
@@ -669,7 +659,7 @@ export function LiveWorkoutSession() {
               {saveError ? (
                 <div
                   role="alert"
-                  className="flex items-center justify-between gap-3 rounded-[10px] border border-status-danger/35 bg-[#2B1517]/60 p-3.5 text-sm text-[#FCA5A5]"
+                  className="flex items-center justify-between gap-3 rounded-[10px] border border-status-danger/35 bg-[#2B1517]/70 p-3.5 text-sm text-[#FCA5A5]"
                 >
                   <span>{saveError}</span>
                   <Button
@@ -683,7 +673,7 @@ export function LiveWorkoutSession() {
                   </Button>
                 </div>
               ) : (
-                <p className="text-xs text-ink-secondary">
+                <p className=" text-xs text-ink-secondary">
                   {saving
                     ? "Saving workout to MongoDB..."
                     : savedWorkout
@@ -707,7 +697,7 @@ export function LiveWorkoutSession() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Note how depth, tempo, or stability felt..."
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-canvas p-3 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent focus:outline-none"
+                  className="w-full rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-canvas p-3 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent focus:outline-none"
                 />
                 {notes.trim() ? (
                   <Button
@@ -744,10 +734,10 @@ export function LiveWorkoutSession() {
           </Card>
         </PageChoreography>
       ) : (
-        <div className="grid gap-5 lg:grid-cols-12">
-          {/* Camera & Canvas Stage */}
+        <div className="grid gap-4 lg:grid-cols-12">
+          {/* Camera & Canvas Bento Stage */}
           <div className="min-w-0 space-y-4 lg:col-span-8">
-            <div className="relative aspect-[4/3] min-h-[260px] w-full overflow-hidden rounded-[16px] border border-[rgba(255,255,255,0.1)] bg-[#050605] sm:aspect-video sm:min-h-0">
+            <div className="relative aspect-[4/3] min-h-[260px] w-full overflow-hidden rounded-[16px] border border-[rgba(255,255,255,0.1)] bg-[#050608] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] sm:aspect-video sm:min-h-0">
               <video
                 id="webcam"
                 ref={videoRef}
@@ -761,7 +751,7 @@ export function LiveWorkoutSession() {
               />
 
               {state.lifecycle === "INITIALIZING" ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-canvas/85 p-6 text-center">
+                <div className=" absolute inset-0 flex flex-col items-center justify-center gap-2 bg-canvas/90 p-6 text-center">
                   <RefreshCw
                     className="h-6 w-6 animate-spin text-accent"
                     strokeWidth={1.5}
@@ -778,7 +768,7 @@ export function LiveWorkoutSession() {
               {state.lifecycle === "ERROR" && cameraError ? (
                 <div
                   role="alert"
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 overflow-y-auto bg-canvas/95 p-5 text-center sm:gap-4 sm:p-6"
+                  className=" absolute inset-0 flex flex-col items-center justify-center gap-3 overflow-y-auto bg-canvas/95 p-5 text-center sm:gap-4 sm:p-6"
                 >
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-status-danger/35 bg-[#2B1517]">
                     <AlertCircle
@@ -813,7 +803,7 @@ export function LiveWorkoutSession() {
               ) : null}
 
               {state.lifecycle === "SET_COMPLETED" ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 overflow-y-auto bg-canvas/85 p-5 text-center backdrop-blur-[2px] sm:gap-4 sm:p-6">
+                <div className=" absolute inset-0 flex flex-col items-center justify-center gap-3 overflow-y-auto bg-canvas/88 p-5 text-center backdrop-blur-[2px] sm:gap-4 sm:p-6">
                   <Badge variant="accent">
                     Set {state.currentSet} complete
                   </Badge>
@@ -822,7 +812,7 @@ export function LiveWorkoutSession() {
                       Rest before Set {state.currentSet + 1} of{" "}
                       {state.config.totalSets}
                     </p>
-                    <p className="text-4xl font-semibold text-ink-primary tabular-nums sm:text-5xl">
+                    <p className=" text-4xl font-semibold text-ink-primary tabular-nums sm:text-5xl">
                       {formatTimerClock(state.restSecondsRemaining)}
                     </p>
                   </div>
@@ -843,8 +833,8 @@ export function LiveWorkoutSession() {
               ) : null}
             </div>
 
-            {/* Session Controls Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[rgba(255,255,255,0.08)] bg-surface p-4">
+            {/* Session Controls Bento Dock */}
+            <div className="bento-cell flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="flex flex-wrap items-center gap-2.5">
                 {state.lifecycle === "READY" || state.lifecycle === "IDLE" ? (
                   <Button
@@ -933,15 +923,15 @@ export function LiveWorkoutSession() {
             </div>
           </div>
 
-          {/* Right Telemetry HUD */}
+          {/* Right BentoGraph Telemetry Cockpit (4 cols) */}
           <div className="min-w-0 space-y-4 lg:col-span-4">
             <Card>
-              <CardContent className="grid grid-cols-2 gap-3 p-4 sm:p-5">
-                <div className="min-w-0 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas p-3.5 sm:p-4">
+              <CardContent className="grid grid-cols-2 gap-3 p-4">
+                <div className="bento-well min-w-0 p-3.5 sm:p-4">
                   <span className="text-xs text-ink-muted">Set reps</span>
                   <p
                     data-testid="live-rep-count"
-                    className="mt-1 text-2xl font-medium text-accent tabular-nums sm:text-3xl"
+                    className="mt-1  text-2xl font-medium text-accent tabular-nums sm:text-3xl"
                   >
                     {state.currentSetReps}
                     <span className="text-base font-normal text-ink-muted">
@@ -949,7 +939,7 @@ export function LiveWorkoutSession() {
                     </span>
                   </p>
                   <div
-                    className="mt-3 h-1 w-full overflow-hidden rounded-full bg-elevated"
+                    className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface"
                     aria-hidden="true"
                   >
                     <div
@@ -958,18 +948,18 @@ export function LiveWorkoutSession() {
                         transform: `scaleX(${Math.min(
                           1,
                           state.currentSetReps /
-                          Math.max(1, state.config.targetReps)
+                            Math.max(1, state.config.targetReps)
                         )})`,
                       }}
                     />
                   </div>
                 </div>
 
-                <div className="min-w-0 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas p-3.5 sm:p-4">
+                <div className="bento-well min-w-0 p-3.5 sm:p-4">
                   <span className="text-xs text-ink-muted">Current set</span>
                   <p
                     data-testid="live-set-count"
-                    className="mt-1 text-2xl font-medium text-ink-primary tabular-nums sm:text-3xl"
+                    className="mt-1  text-2xl font-medium text-ink-primary tabular-nums sm:text-3xl"
                   >
                     {state.currentSet}
                     <span className="text-base font-normal text-ink-muted">
@@ -978,16 +968,16 @@ export function LiveWorkoutSession() {
                   </p>
                 </div>
 
-                <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas p-4">
+                <div className="bento-well p-3.5 sm:p-4">
                   <span className="text-xs text-ink-muted">Total reps</span>
-                  <p className="mt-1 text-xl font-medium text-ink-primary tabular-nums">
+                  <p className="mt-1  text-xl font-medium text-ink-primary tabular-nums">
                     {state.totalReps}
                   </p>
                 </div>
 
-                <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas p-4">
+                <div className="bento-well p-3.5 sm:p-4">
                   <span className="text-xs text-ink-muted">Active time</span>
-                  <p className="mt-1 text-xl font-medium text-ink-primary tabular-nums">
+                  <p className="mt-1  text-xl font-medium text-ink-primary tabular-nums">
                     {formatTimerClock(elapsedSeconds)}
                   </p>
                 </div>
@@ -997,14 +987,14 @@ export function LiveWorkoutSession() {
             {/* Exercise-specific biomechanics */}
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <CardTitle className="text-sm">Live biomechanics</CardTitle>
-                  <span className="text-xs font-medium text-ink-muted">
+                  <span className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-canvas px-2 py-0.5  text-[11px] font-medium text-ink-secondary">
                     Phase: {state.lastPhase}
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2.5 pt-0">
+              <CardContent className="space-y-2 pt-0">
                 {exerciseDef.metricDefinitions.map((metric) => {
                   const raw = state.lastMetrics[metric.key];
                   const formatted =
@@ -1016,10 +1006,10 @@ export function LiveWorkoutSession() {
                   return (
                     <div
                       key={metric.key}
-                      className="flex items-center justify-between rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas px-3.5 py-2.5 text-sm"
+                      className="bento-well flex items-center justify-between px-3.5 py-2.5 text-sm"
                     >
                       <span className="text-ink-secondary">{metric.label}</span>
-                      <span className="font-semibold text-ink-primary tabular-nums">
+                      <span className=" text-xs font-semibold text-ink-primary tabular-nums">
                         {formatted}
                       </span>
                     </div>
@@ -1031,7 +1021,7 @@ export function LiveWorkoutSession() {
             {/* AI Coach panel */}
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <CardTitle className="text-sm">Coach feedback</CardTitle>
                   {coachBanner ? (
                     <Badge variant="neutral">
@@ -1041,15 +1031,17 @@ export function LiveWorkoutSession() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3 pt-0">
-                <p
-                  data-testid="coach-feedback-text"
-                  className="text-sm leading-6 text-ink-primary"
-                >
-                  {coachBanner?.text ?? exerciseDef.cameraCue}
-                </p>
+                <div className="bento-well p-3.5">
+                  <p
+                    data-testid="coach-feedback-text"
+                    className="text-sm leading-6 text-ink-primary"
+                  >
+                    {coachBanner?.text ?? exerciseDef.cameraCue}
+                  </p>
+                </div>
 
                 {state.lastFormIssues.length > 0 ? (
-                  <div className="space-y-1.5 rounded-[8px] border border-status-warning/30 bg-status-warning/10 p-3">
+                  <div className="space-y-1.5 rounded-[10px] border border-status-warning/30 bg-status-warning/10 p-3">
                     {state.lastFormIssues.map((issue) => (
                       <p key={issue} className="text-xs text-[#F5B942]">
                         {issue}
@@ -1058,7 +1050,7 @@ export function LiveWorkoutSession() {
                   </div>
                 ) : null}
 
-                <p className="text-[11px] text-ink-muted">
+                <p className=" text-[11px] text-ink-muted">
                   Advisory technique feedback only; not medical advice.
                 </p>
               </CardContent>

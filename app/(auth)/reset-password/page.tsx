@@ -51,8 +51,11 @@ function ResetPasswordInner() {
   }
 
   return (
-    <Card>
+    <Card graphGrid>
       <CardHeader>
+        <span className="font-mono text-[11px] text-accent">
+          Password update
+        </span>
         <CardTitle className="text-xl">Set a new password</CardTitle>
         <CardDescription>
           Paste your single-use reset token and choose a new password.

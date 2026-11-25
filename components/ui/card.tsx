@@ -3,14 +3,22 @@ import { cn } from "@/lib/utils";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   elevated?: boolean;
+  graphGrid?: boolean;
 }
 
-export function Card({ className, elevated = false, ...props }: CardProps) {
+export function Card({
+  className,
+  elevated = false,
+  graphGrid: _graphGrid = false,
+  ...props
+}: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-[12px] border border-[rgba(255,255,255,0.08)]",
-        elevated ? "bg-elevated" : "bg-surface",
+        "rounded-[16px] border shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]",
+        elevated
+          ? "border-[rgba(255,255,255,0.11)] bg-elevated"
+          : "border-[rgba(255,255,255,0.08)] bg-surface",
         className
       )}
       {...props}
@@ -37,7 +45,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "text-base font-medium tracking-[-0.01em] text-ink-primary",
+        "text-base font-medium tracking-[-0.015em] text-ink-primary",
         className
       )}
       {...props}
@@ -50,7 +58,7 @@ export function CardDescription({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-sm text-ink-secondary", className)} {...props} />
+    <p className={cn("text-sm leading-5 text-ink-secondary", className)} {...props} />
   );
 }
 
@@ -68,7 +76,7 @@ export function CardFooter({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-3 border-t border-[rgba(255,255,255,0.06)] px-5 py-3.5",
+        "flex items-center justify-between gap-3 border-t border-[rgba(255,255,255,0.07)] px-5 py-3.5",
         className
       )}
       {...props}

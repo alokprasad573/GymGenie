@@ -203,31 +203,31 @@ function ArticulatedRig({
       {/* Calibrated stance floor reticle aligned cleanly under feet/hands */}
       <Line
         points={outerRing}
-        color="#2B362E"
+        color="#2B313D"
         lineWidth={1}
         transparent
-        opacity={0.8}
+        opacity={0.85}
       />
       <Line
         points={innerRing}
         color="#C6FF4D"
         lineWidth={1}
         transparent
-        opacity={0.32}
+        opacity={0.35}
       />
       <Line
         points={axisX}
-        color="#222C25"
+        color="#232833"
         lineWidth={1}
         transparent
-        opacity={0.55}
+        opacity={0.6}
       />
       <Line
         points={axisZ}
-        color="#222C25"
+        color="#232833"
         lineWidth={1}
         transparent
-        opacity={0.55}
+        opacity={0.6}
       />
 
       {/* Sculpted matte cylindrical bone limbs */}

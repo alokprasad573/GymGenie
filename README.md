@@ -82,7 +82,7 @@ Comprehensive, production-grade technical documentation is available:
 | **Language** | TypeScript 5 (strict mode) | End-to-end type safety |
 | **Frontend** | React 19, Tailwind CSS v4, Radix UI | Modern, accessible responsive interface |
 | **Computer Vision** | `@mediapipe/tasks-vision` | Browser-side 33-landmark pose tracking |
-| **3D & Motion** | Three.js, React Three Fiber, GSAP, Framer Motion | 3D avatar rig and scroll animations |
+| **3D & Motion** | Three.js, GSAP | 3D avatar rig and scroll animations |
 | **Database** | MongoDB Atlas & Mongoose 8 | User accounts, sessions, and workout history |
 | **Auth** | `jose` (JWT) & Argon2id | Dual-cookie token rotation and password hashing |
 | **AI LLM** | Groq Cloud JavaScript SDK | High-speed multi-model corrective coaching cues |

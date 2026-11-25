@@ -159,30 +159,30 @@ export function AppShell({ user, children }: AppShellProps) {
   const initials = displayName.slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex min-h-dvh flex-col bg-canvas text-ink-primary">
+    <div className="bg-bento-graph flex min-h-dvh flex-col text-ink-primary">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-[8px] focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-canvas focus:outline-none"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-[10px] focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-canvas focus:outline-none"
       >
         Skip to main content
       </a>
 
-      {/* Sticky top navigation bar */}
-      <header className="sticky top-0 z-30 border-b border-[rgba(255,255,255,0.08)] bg-[#0D100E]/95 backdrop-blur-md">
+      {/* BentoGraph Sticky Navigation Bar */}
+      <header className="sticky top-0 z-30 border-b border-[rgba(255,255,255,0.08)] bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           {/* Left: Brand logo & product name */}
           <Link
             href="/dashboard"
             onClick={() => setMobileMenuOpen(false)}
-            className="inline-flex min-h-10 shrink-0 items-center rounded-[8px] py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="inline-flex min-h-10 shrink-0 items-center rounded-[10px] py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <BrandMark />
           </Link>
 
-          {/* Desktop center: Inline tab navigation */}
+          {/* Desktop center: Segmented BentoGraph tab rail */}
           <nav
             aria-label="Primary navigation"
-            className="hidden h-full items-center gap-1 lg:flex"
+            className="hidden items-center gap-1 rounded-[12px] border border-[rgba(255,255,255,0.08)] bg-surface/90 p-1 lg:flex"
           >
             {APP_NAV_ITEMS.map((item, index) => {
               const Icon = item.icon;
@@ -197,10 +197,10 @@ export function AppShell({ user, children }: AppShellProps) {
                   aria-current={active ? "page" : undefined}
                   onKeyDown={(event) => handleTabKeyDown(event, index)}
                   className={cn(
-                    "group relative inline-flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-[8px] px-3.5 text-sm font-medium transition-colors duration-150 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+                    "group relative inline-flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-[8px] px-3 text-sm font-medium transition-colors duration-150 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                     active
-                      ? "bg-elevated/70 text-ink-primary"
-                      : "text-ink-secondary hover:bg-surface/75 hover:text-ink-primary"
+                      ? "border border-[rgba(255,255,255,0.1)] bg-elevated text-ink-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                      : "border border-transparent text-ink-secondary hover:bg-canvas/70 hover:text-ink-primary"
                   )}
                 >
                   <Icon
@@ -214,13 +214,6 @@ export function AppShell({ user, children }: AppShellProps) {
                     strokeWidth={1.6}
                   />
                   <span>{item.label}</span>
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      "pointer-events-none absolute inset-x-3 bottom-0.5 h-[2px] rounded-full transition-opacity duration-150",
-                      active ? "bg-accent opacity-100" : "bg-transparent opacity-0"
-                    )}
-                  />
                 </Link>
               );
             })}
@@ -234,11 +227,11 @@ export function AppShell({ user, children }: AppShellProps) {
                   type="button"
                   suppressHydrationWarning
                   aria-label={`Account menu for ${displayName}`}
-                  className="inline-flex min-h-10 max-w-[240px] cursor-pointer items-center gap-2.5 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-surface/80 px-2.5 py-1.5 text-left transition-colors hover:border-[rgba(255,255,255,0.16)] hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="inline-flex min-h-10 max-w-[240px] cursor-pointer items-center gap-2.5 rounded-[12px] border border-[rgba(255,255,255,0.08)] bg-surface px-2.5 py-1.5 text-left transition-colors hover:border-[rgba(255,255,255,0.16)] hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   <span
                     aria-hidden="true"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] border border-[rgba(255,255,255,0.1)] bg-elevated text-xs font-semibold tracking-wide text-ink-primary"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-canvas  text-xs font-medium text-ink-primary"
                   >
                     {initials}
                   </span>
@@ -246,7 +239,7 @@ export function AppShell({ user, children }: AppShellProps) {
                     <span className="block truncate text-sm font-medium leading-tight text-ink-primary">
                       {displayName}
                     </span>
-                    <span className="block truncate text-[11px] leading-tight text-ink-muted">
+                    <span className="block truncate  text-[11px] leading-tight text-ink-muted">
                       @{user.displayUsername || user.username}
                     </span>
                   </span>
@@ -294,7 +287,7 @@ export function AppShell({ user, children }: AppShellProps) {
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation-panel"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-surface/80 text-ink-primary transition-colors hover:border-[rgba(255,255,255,0.18)] hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:hidden"
+            className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-surface text-ink-primary transition-colors hover:border-[rgba(255,255,255,0.18)] hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:hidden"
           >
             {mobileMenuOpen ? (
               <X className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
@@ -308,7 +301,7 @@ export function AppShell({ user, children }: AppShellProps) {
         {mobileMenuOpen ? (
           <div
             id="mobile-navigation-panel"
-            className="border-t border-[rgba(255,255,255,0.08)] bg-[#0D100E] px-4 pb-5 pt-3 shadow-[0_18px_40px_rgba(0,0,0,0.55)] sm:px-6 lg:hidden"
+            className="border-t border-[rgba(255,255,255,0.08)] bg-surface px-4 pb-5 pt-3 shadow-[0_18px_40px_rgba(0,0,0,0.6)] sm:px-6 lg:hidden"
           >
             <nav
               aria-label="Mobile navigation"
@@ -324,10 +317,10 @@ export function AppShell({ user, children }: AppShellProps) {
                     aria-current={active ? "page" : undefined}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "relative flex min-h-[44px] items-center gap-3 rounded-[8px] px-3.5 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+                      "relative flex min-h-[44px] items-center gap-3 rounded-[10px] px-3.5 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                       active
                         ? "border border-[rgba(255,255,255,0.1)] bg-elevated text-ink-primary"
-                        : "border border-transparent text-ink-secondary hover:bg-surface hover:text-ink-primary"
+                        : "border border-transparent text-ink-secondary hover:bg-canvas/70 hover:text-ink-primary"
                     )}
                   >
                     <span
@@ -356,7 +349,7 @@ export function AppShell({ user, children }: AppShellProps) {
               <div className="flex items-center gap-3 px-2 py-1">
                 <span
                   aria-hidden="true"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-elevated text-xs font-semibold tracking-wide text-ink-primary"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-canvas  text-xs font-medium text-ink-primary"
                 >
                   {initials}
                 </span>
@@ -364,7 +357,7 @@ export function AppShell({ user, children }: AppShellProps) {
                   <p className="truncate text-sm font-medium text-ink-primary">
                     {displayName}
                   </p>
-                  <p className="truncate text-xs text-ink-muted">
+                  <p className="truncate  text-xs text-ink-muted">
                     @{user.displayUsername || user.username}
                   </p>
                 </div>
@@ -375,10 +368,10 @@ export function AppShell({ user, children }: AppShellProps) {
                 aria-current={isProfileActive ? "page" : undefined}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "flex min-h-[44px] items-center gap-3 rounded-[8px] px-3.5 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+                  "flex min-h-[44px] items-center gap-3 rounded-[10px] px-3.5 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                   isProfileActive
                     ? "border border-[rgba(255,255,255,0.1)] bg-elevated text-ink-primary"
-                    : "border border-transparent text-ink-secondary hover:bg-surface hover:text-ink-primary"
+                    : "border border-transparent text-ink-secondary hover:bg-canvas/70 hover:text-ink-primary"
                 )}
               >
                 <Settings
@@ -397,7 +390,7 @@ export function AppShell({ user, children }: AppShellProps) {
                 suppressHydrationWarning
                 onClick={() => void handleLogout()}
                 disabled={loggingOut}
-                className="flex min-h-[44px] w-full cursor-pointer items-center gap-3 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-surface/60 px-3.5 py-2.5 text-left text-sm font-medium text-status-danger transition-colors hover:bg-surface disabled:pointer-events-none disabled:opacity-45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="flex min-h-[44px] w-full cursor-pointer items-center gap-3 rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-canvas/70 px-3.5 py-2.5 text-left text-sm font-medium text-status-danger transition-colors hover:bg-elevated disabled:pointer-events-none disabled:opacity-45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 <LogOut
                   aria-hidden="true"

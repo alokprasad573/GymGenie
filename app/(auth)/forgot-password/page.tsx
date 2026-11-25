@@ -52,6 +52,9 @@ export default function ForgotPasswordPage() {
   return (
     <Card>
       <CardHeader>
+        <span className="font-mono text-[11px] text-accent">
+          Account recovery
+        </span>
         <CardTitle className="text-xl">Reset your password</CardTitle>
         <CardDescription>
           Enter your account email to request a single-use password reset token.

@@ -16,7 +16,7 @@ export const SelectTrigger = React.forwardRef<
     ref={ref}
     suppressHydrationWarning
     className={cn(
-      "flex h-10 w-full items-center justify-between gap-2 rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-canvas px-3 text-sm text-ink-primary transition-colors hover:border-[rgba(255,255,255,0.18)] focus:border-accent focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+      "flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-canvas px-3 text-sm text-ink-primary transition-colors hover:border-[rgba(255,255,255,0.18)] focus:border-accent focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}

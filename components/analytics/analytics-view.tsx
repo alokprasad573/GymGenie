@@ -2,23 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import dynamic from "next/dynamic";
 import { PageChoreography } from "@/components/animations/page-choreography";
+import { BENTO_SERIES_COLORS } from "@/lib/chart-palette";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -47,28 +33,79 @@ import type {
 } from "@/types/dto";
 import type { ExerciseType } from "@/types/exercise";
 
-const DONUT_COLORS = [
-  "#C6FF4D", // Electric lime (brand accent)
-  "#4AD8B8", // Mineral teal
-  "#60A5FA", // Slate sky blue
-  "#F5B942", // Warm amber
-  "#F0786C", // Soft coral
-];
+const LazyDailyVolumeBarChart = dynamic(
+  () =>
+    import("@/components/analytics/analytics-charts").then(
+      (m) => m.DailyVolumeBarChart
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[288px] w-full rounded-[10px]" />,
+  }
+);
 
-interface AnalyticsState {
+const LazyExerciseDistributionDonut = dynamic(
+  () =>
+    import("@/components/analytics/analytics-charts").then(
+      (m) => m.ExerciseDistributionDonut
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[176px] w-full rounded-[10px]" />,
+  }
+);
+
+const LazyMonthlyDurationAreaChart = dynamic(
+  () =>
+    import("@/components/analytics/analytics-charts").then(
+      (m) => m.MonthlyDurationAreaChart
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[244px] w-full rounded-[10px]" />,
+  }
+);
+
+const LazyExerciseProgressionLineChart = dynamic(
+  () =>
+    import("@/components/analytics/analytics-charts").then(
+      (m) => m.ExerciseProgressionLineChart
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[244px] w-full rounded-[10px]" />,
+  }
+);
+
+export interface AnalyticsDataSnapshot {
   weekly: DailyActivityPoint[];
   monthly: MonthlyActivityPoint[];
   exercises: ExerciseAnalyticsItem[];
 }
 
-export function AnalyticsView() {
+interface AnalyticsViewProps {
+  initialData?: AnalyticsDataSnapshot | null;
+  initialError?: string | null;
+}
+
+export function AnalyticsView({
+  initialData = null,
+  initialError = null,
+}: AnalyticsViewProps) {
   const [days, setDays] = React.useState<string>("30");
   const [reloadCount, setReloadCount] = React.useState(0);
   const [selectedExercise, setSelectedExercise] =
     React.useState<ExerciseType>("squats");
-  const [data, setData] = React.useState<AnalyticsState | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  const [data, setData] = React.useState<AnalyticsDataSnapshot | null>(
+    initialData
+  );
+  const [loading, setLoading] = React.useState(
+    !initialData && !initialError
+  );
+  const [error, setError] = React.useState<string | null>(initialError);
+  const skipInitialFetchRef = React.useRef(
+    Boolean(initialData || initialError)
+  );
 
   const handleDaysChange = React.useCallback((nextDays: string) => {
     setLoading(true);
@@ -83,6 +120,11 @@ export function AnalyticsView() {
   }, []);
 
   React.useEffect(() => {
+    if (skipInitialFetchRef.current) {
+      skipInitialFetchRef.current = false;
+      return;
+    }
+
     let cancelled = false;
 
     async function loadAnalytics() {
@@ -146,16 +188,11 @@ export function AnalyticsView() {
   );
 
   return (
-    <PageChoreography
-      revealKey={`${days}-${loading ? "loading" : "ready"}`}
-      className="space-y-6"
-    >
-      <div
-        data-page-header
-        className="flex flex-wrap items-end justify-between gap-4"
-      >
+    <PageChoreography className="space-y-4">
+      {/* Header Bento Cell */}
+      <div className="bento-cell flex flex-wrap items-end justify-between gap-4 p-5 sm:p-6">
         <div>
-          <h1 className="text-2xl font-medium tracking-[-0.02em] text-ink-primary sm:text-[30px]">
+          <h1 className="mt-1 text-2xl font-medium tracking-[-0.025em] text-ink-primary sm:text-[30px]">
             Performance analytics
           </h1>
           <p className="mt-1 text-sm text-ink-secondary">
@@ -179,10 +216,10 @@ export function AnalyticsView() {
 
       {loading ? (
         <div className="grid gap-4 lg:grid-cols-12">
-          <Skeleton className="h-[340px] lg:col-span-8" />
-          <Skeleton className="h-[340px] lg:col-span-4" />
-          <Skeleton className="h-[320px] lg:col-span-6" />
-          <Skeleton className="h-[320px] lg:col-span-6" />
+          <Skeleton className="h-[340px] rounded-[16px] lg:col-span-8" />
+          <Skeleton className="h-[340px] rounded-[16px] lg:col-span-4" />
+          <Skeleton className="h-[320px] rounded-[16px] lg:col-span-5" />
+          <Skeleton className="h-[320px] rounded-[16px] lg:col-span-7" />
         </div>
       ) : error ? (
         <StatePanel
@@ -190,11 +227,7 @@ export function AnalyticsView() {
           title="Could not load analytics"
           description={error}
           action={
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleRetry}
-            >
+            <Button type="button" variant="secondary" onClick={handleRetry}>
               Retry
             </Button>
           }
@@ -212,31 +245,33 @@ export function AnalyticsView() {
         />
       ) : (
         <>
-          {/* Summary KPI strip */}
+          {/* Summary Bento KPI strip */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard
-              data-stagger-item
-              label="Total Workout Sessions"
+              indexLabel="01"
+              label="Total workout sessions"
               value={formatNumber(totalSessionsInWindow)}
               context={`Last ${days} days`}
             />
             <MetricCard
-              data-stagger-item
-              label="Total Tracked Reps Count"
+              indexLabel="02"
+              label="Total tracked reps"
               value={formatNumber(totalRepsInWindow)}
-              context="Total tracked reps"
+              context="Persisted rep count"
               accent
             />
             <MetricCard
-              data-stagger-item
-              label="Total Active time"
+              indexLabel="03"
+              label="Total active time"
               value={formatDuration(totalDurationInWindow)}
               context="Tracked set duration"
             />
             <MetricCard
-              data-stagger-item
+              indexLabel="04"
               label="Top movement"
-              value={topMovement ? EXERCISES[topMovement.exercise].shortLabel : "None"}
+              value={
+                topMovement ? EXERCISES[topMovement.exercise].shortLabel : "None"
+              }
               context={
                 topMovement
                   ? `${formatNumber(topMovement.totalReps)} reps logged`
@@ -245,57 +280,22 @@ export function AnalyticsView() {
             />
           </div>
 
-          {/* Row 1: Wide Weekly Frequency Bar + Narrow Exercise Distribution Donut */}
-          <div data-scroll-reveal className="grid gap-4 lg:grid-cols-12">
+          {/* Row 1: Wide Daily Volume Bar (8 cols) + Exercise Distribution (4 cols) */}
+          <div className="grid gap-4 lg:grid-cols-12">
             <Card className="min-w-0 lg:col-span-8">
-              <CardHeader>
-                <CardTitle>Daily workout volume</CardTitle>
-                <CardDescription>
-                  Total reps logged per UTC day over the last {days} days
-                </CardDescription>
+              <CardHeader className="flex-row flex-wrap items-start justify-between gap-2 space-y-0">
+                <div>
+                  <CardTitle>Daily workout volume</CardTitle>
+                  <CardDescription>
+                    Total reps logged per UTC day over the last {days} days
+                  </CardDescription>
+                </div>
+                <span className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-canvas px-2.5 py-1  text-[11px] text-ink-secondary tabular-nums">
+                  {days}d series
+                </span>
               </CardHeader>
               <CardContent className="pt-2">
-                <div className="h-[288px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={data?.weekly ?? []}
-                      margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
-                    >
-                      <CartesianGrid
-                        vertical={false}
-                        stroke="rgba(255,255,255,0.06)"
-                      />
-                      <XAxis
-                        dataKey="label"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={{ fill: "#9AA49B", fontSize: 11 }}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        allowDecimals={false}
-                        tick={{ fill: "#6C766E", fontSize: 11 }}
-                      />
-                      <Tooltip
-                        cursor={{ fill: "rgba(255,255,255,0.04)" }}
-                        contentStyle={{
-                          backgroundColor: "#171E19",
-                          border: "1px solid rgba(255,255,255,0.12)",
-                          borderRadius: "8px",
-                          fontSize: "12px",
-                          color: "#F5F7F2",
-                        }}
-                      />
-                      <Bar
-                        dataKey="reps"
-                        fill="#C6FF4D"
-                        radius={[3, 3, 0, 0]}
-                        maxBarSize={32}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                <LazyDailyVolumeBarChart data={data?.weekly ?? []} />
               </CardContent>
             </Card>
 
@@ -305,65 +305,50 @@ export function AnalyticsView() {
                 <CardDescription>Share of sessions by movement</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-2">
-                <div className="h-[176px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={distributionData}
-                        dataKey="sessions"
-                        nameKey="label"
-                        innerRadius={52}
-                        outerRadius={76}
-                        paddingAngle={2}
-                        stroke="none"
-                      >
-                        {distributionData.map((entry, idx) => (
-                          <Cell
-                            key={entry.exercise}
-                            fill={DONUT_COLORS[idx % DONUT_COLORS.length]}
+                <LazyExerciseDistributionDonut data={distributionData} />
+                <div className="space-y-2 border-t border-[rgba(255,255,255,0.06)] pt-3">
+                  {distributionData.map((item, idx) => {
+                    const sharePct = Math.round(
+                      (item.sessions / Math.max(1, totalSessionsInWindow)) * 100
+                    );
+                    const color =
+                      BENTO_SERIES_COLORS[idx % BENTO_SERIES_COLORS.length];
+                    return (
+                      <div key={item.exercise} className="space-y-1">
+                        <div className="flex items-center justify-between gap-3 text-xs">
+                          <span className="flex min-w-0 items-center gap-2 text-ink-secondary">
+                            <span
+                              className="h-2 w-2 shrink-0 rounded-full"
+                              style={{ backgroundColor: color }}
+                            />
+                            <span className="truncate">{item.label}</span>
+                          </span>
+                          <span className="shrink-0  text-md font-medium text-ink-primary tabular-nums">
+                            {item.sessions} session · {formatNumber(item.totalReps)} reps
+                          </span>
+                        </div>
+                        <div
+                          aria-hidden="true"
+                          className="h-1 w-full overflow-hidden rounded-full bg-canvas"
+                        >
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${Math.max(4, sharePct)}%`,
+                              backgroundColor: color,
+                            }}
                           />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#171E19",
-                          border: "1px solid rgba(255,255,255,0.12)",
-                          borderRadius: "8px",
-                          fontSize: "12px",
-                          color: "#F5F7F2",
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="space-y-1.5">
-                  {distributionData.map((item, idx) => (
-                    <div
-                      key={item.exercise}
-                      className="flex items-center justify-between gap-3 text-xs"
-                    >
-                      <span className="flex min-w-0 items-center gap-2 text-ink-secondary">
-                        <span
-                          className="h-2 w-2 shrink-0 rounded-full"
-                          style={{
-                            backgroundColor:
-                              DONUT_COLORS[idx % DONUT_COLORS.length],
-                          }}
-                        />
-                        <span className="truncate">{item.label}</span>
-                      </span>
-                      <span className="shrink-0 font-medium text-ink-primary tabular-nums">
-                        {item.sessions} sessions · {formatNumber(item.totalReps)} reps
-                      </span>
-                    </div>
-                  ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Row 2: Varied proportions: 5-col Monthly Duration + 7-col Rep Progression */}
-          <div data-scroll-reveal className="grid gap-4 lg:grid-cols-12">
+          {/* Row 2: 5-col Monthly Duration + 7-col Rep Progression */}
+          <div className="grid gap-4 lg:grid-cols-12">
             <Card className="min-w-0 lg:col-span-5">
               <CardHeader>
                 <CardTitle>Monthly active duration</CardTitle>
@@ -372,50 +357,7 @@ export function AnalyticsView() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-2">
-                <div className="h-[240px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart
-                      data={data?.monthly ?? []}
-                      margin={{ top: 8, right: 8, left: -12, bottom: 0 }}
-                    >
-                      <CartesianGrid
-                        vertical={false}
-                        stroke="rgba(255,255,255,0.06)"
-                      />
-                      <XAxis
-                        dataKey="label"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={{ fill: "#9AA49B", fontSize: 12 }}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tick={{ fill: "#6C766E", fontSize: 11 }}
-                      />
-                      <Tooltip
-                        formatter={(value: number) => [
-                          formatDuration(value),
-                          "Active duration",
-                        ]}
-                        contentStyle={{
-                          backgroundColor: "#171E19",
-                          border: "1px solid rgba(255,255,255,0.12)",
-                          borderRadius: "8px",
-                          fontSize: "12px",
-                          color: "#F5F7F2",
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="durationSeconds"
-                        stroke="#C6FF4D"
-                        strokeWidth={2}
-                        fill="rgba(198,255,77,0.12)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
+                <LazyMonthlyDurationAreaChart data={data?.monthly ?? []} />
               </CardContent>
             </Card>
 
@@ -425,7 +367,7 @@ export function AnalyticsView() {
                   <CardTitle>Exercise rep progression</CardTitle>
                   <CardDescription>
                     Best single session:{" "}
-                    <span className="font-medium text-ink-primary tabular-nums">
+                    <span className=" font-medium text-accent tabular-nums">
                       {selectedExerciseData?.bestSessionReps ?? 0} reps
                     </span>
                   </CardDescription>
@@ -450,53 +392,15 @@ export function AnalyticsView() {
               </CardHeader>
               <CardContent className="pt-2">
                 {!selectedExerciseData ||
-                  selectedExerciseData.progression.length === 0 ? (
-                  <div className="flex h-[240px] items-center justify-center text-sm text-ink-secondary">
+                selectedExerciseData.progression.length === 0 ? (
+                  <div className="bento-well flex h-[244px] items-center justify-center text-sm text-ink-secondary">
                     No {EXERCISES[selectedExercise].shortLabel.toLowerCase()}{" "}
                     sessions logged in this range
                   </div>
                 ) : (
-                  <div className="h-[240px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={selectedExerciseData.progression}
-                        margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
-                      >
-                        <CartesianGrid
-                          vertical={false}
-                          stroke="rgba(255,255,255,0.06)"
-                        />
-                        <XAxis
-                          dataKey="date"
-                          tickLine={false}
-                          axisLine={false}
-                          tick={{ fill: "#9AA49B", fontSize: 11 }}
-                        />
-                        <YAxis
-                          tickLine={false}
-                          axisLine={false}
-                          allowDecimals={false}
-                          tick={{ fill: "#6C766E", fontSize: 11 }}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "#171E19",
-                            border: "1px solid rgba(255,255,255,0.12)",
-                            borderRadius: "8px",
-                            fontSize: "12px",
-                            color: "#F5F7F2",
-                          }}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="reps"
-                          stroke="#C6FF4D"
-                          strokeWidth={2}
-                          dot={{ r: 3.5, fill: "#C6FF4D" }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <LazyExerciseProgressionLineChart
+                    data={selectedExerciseData.progression}
+                  />
                 )}
               </CardContent>
             </Card>

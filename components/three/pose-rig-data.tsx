@@ -409,7 +409,7 @@ export function StaticPoseWireframe({
           stroke="rgba(198,255,77,0.28)"
           strokeWidth="1"
         />
-        <g stroke="#7C877E" strokeWidth="2.4" strokeLinecap="round" fill="none">
+        <g stroke="#8690A2" strokeWidth="2.4" strokeLinecap="round" fill="none">
           {RIG_BONES.map(([a, b], idx) => {
             const p1 = projected.joints[a];
             const p2 = projected.joints[b];
@@ -428,7 +428,7 @@ export function StaticPoseWireframe({
               cx={cx}
               cy={cy}
               r={r}
-              fill={isPrimary ? "#C6FF4D" : "#F5F7F2"}
+              fill={isPrimary ? "#C6FF4D" : "#F4F6F8"}
             />
           );
         })}

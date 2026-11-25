@@ -16,18 +16,24 @@ export function HeroPoseVisual() {
   const reducedMotion = useReducedMotion();
   const def = EXERCISES[activeExercise];
 
-  // Subtle metric readout transition when switching previewed exercise
   React.useEffect(() => {
-    if (reducedMotion || !metricsRef.current) return;
+    if (
+      reducedMotion ||
+      !metricsRef.current ||
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    ) {
+      return;
+    }
     const ctx = gsap.context(() => {
       gsap.fromTo(
         "[data-hero-metric-val]",
-        { opacity: 0.45, y: 3 },
+        { opacity: 0.35, y: 4 },
         {
           opacity: 1,
           y: 0,
-          duration: 0.24,
-          stagger: 0.03,
+          duration: 0.26,
+          stagger: 0.04,
           ease: "power2.out",
           clearProps: "transform,opacity",
         }
@@ -37,25 +43,25 @@ export function HeroPoseVisual() {
   }, [activeExercise, reducedMotion]);
 
   return (
-    <div className="gg-stage-frame relative flex flex-col justify-between overflow-hidden rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-surface p-5">
-      {/* Top telemetry bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[rgba(255,255,255,0.06)] pb-3">
+    <div className="bento-cell flex h-full flex-col justify-between overflow-hidden p-5">
+      {/* Top coordinate header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[rgba(255,255,255,0.07)] pb-3.5">
         <div className="flex items-center gap-2">
           <span
-            className="h-1.5 w-1.5 rounded-full bg-accent"
+            className="h-2 w-2 rounded-full bg-accent"
             aria-hidden="true"
           />
-          <span className="text-xs font-medium text-ink-secondary">
-            MediaPipe Pose Landmarker · 33 landmarks
+          <span className="text-xs font-medium text-ink-primary">
+            MediaPipe Pose Landmarker
           </span>
         </div>
       </div>
 
-      {/* Interactive 5-exercise selector pills */}
+      {/* Interactive 5-exercise selector rail */}
       <div
         role="tablist"
         aria-label="Preview biomechanics rig by exercise"
-        className="gg-no-scrollbar mt-3 flex flex-nowrap items-center gap-2 overflow-x-auto pb-0.5 sm:flex-wrap sm:overflow-visible sm:pb-0"
+        className="gg-no-scrollbar mt-3.5 flex flex-nowrap items-center gap-1.5 overflow-x-auto pb-0.5 sm:flex-wrap sm:overflow-visible sm:pb-0"
       >
         {EXERCISE_ORDER.map((id, idx) => {
           const item = EXERCISES[id];
@@ -83,10 +89,10 @@ export function HeroPoseVisual() {
                 }
               }}
               className={cn(
-                "min-h-9 shrink-0 cursor-pointer whitespace-nowrap rounded-[6px] border px-3 py-1.5 text-xs font-medium transition-colors duration-150",
+                "min-h-9 shrink-0 cursor-pointer whitespace-nowrap rounded-[8px] border px-3 py-1.5 text-xs font-medium transition-colors duration-150",
                 isSelected
-                  ? "border-accent/45 bg-elevated text-accent shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-                  : "border-[rgba(255,255,255,0.08)] bg-canvas text-ink-secondary hover:border-[rgba(255,255,255,0.16)] hover:text-ink-primary"
+                  ? "border-accent/40 bg-elevated text-accent shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                  : "border-[rgba(255,255,255,0.07)] bg-canvas text-ink-secondary hover:border-[rgba(255,255,255,0.16)] hover:text-ink-primary"
               )}
             >
               {item.shortLabel}
@@ -95,24 +101,31 @@ export function HeroPoseVisual() {
         })}
       </div>
 
-      {/* 3D Biomechanics Stage (10% more compact, zero overlaid clipping) */}
-      <div className="my-3 h-[230px] w-full sm:h-[288px]">
-        <ExerciseRigPreview exercise={activeExercise} interactive />
+      {/* 3D Biomechanics Graph Stage */}
+      <div className="bento-well relative my-3.5 h-[240px] w-full overflow-hidden sm:h-[296px]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3 top-2.5 z-10 text-[11px] text-ink-muted"
+        >
+          {def.label}
+        </div>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-3 top-2.5 z-10 text-[11px] text-ink-muted"
+        >
+          {def.muscleGroup}
+        </div>
+        <ExerciseRigPreview
+          exercise={activeExercise}
+          interactive
+          className="bg-transparent"
+        />
       </div>
 
-      {/* Active movement metadata line */}
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-secondary">
-        <span className="font-medium text-ink-primary">{def.label}</span>
-        <span className="text-ink-muted">{def.muscleGroup}</span>
-      </div>
-
-      {/* Calibrated Threshold Readout */}
-      <div
-        ref={metricsRef}
-        className="grid grid-cols-2 gap-2 border-t border-[rgba(255,255,255,0.06)] pt-4 sm:grid-cols-3"
-      >
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas px-3 py-2.5">
-          <span className="block text-xs text-ink-muted">Angle thresholds</span>
+      {/* Calibrated Threshold Sub-Bento Strip */}
+      <div ref={metricsRef} className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+        <div className="bento-well px-3.5 py-2.5">
+          <span className="block text-xs text-ink-muted">Angle window</span>
           <span
             data-hero-metric-val
             className="mt-1 block text-sm font-medium text-accent tabular-nums"
@@ -120,7 +133,7 @@ export function HeroPoseVisual() {
             &lt; {def.thresholds.primaryTrigger}° / {def.thresholds.returnTrigger}°
           </span>
         </div>
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas px-3 py-2.5">
+        <div className="bento-well px-3.5 py-2.5">
           <span className="block text-xs text-ink-muted">Visibility gate</span>
           <span
             data-hero-metric-val
@@ -129,7 +142,7 @@ export function HeroPoseVisual() {
             {def.thresholds.minVisibility.toFixed(2)} min
           </span>
         </div>
-        <div className="col-span-2 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas px-3 py-2.5 sm:col-span-1">
+        <div className="bento-well col-span-2 px-3.5 py-2.5 sm:col-span-1">
           <span className="block text-xs text-ink-muted">Tracked cues</span>
           <span
             data-hero-metric-val
@@ -143,6 +156,11 @@ export function HeroPoseVisual() {
   );
 }
 
+/**
+ * GSAP landing choreography with ScrollTrigger reveals for Bento sections.
+ * Clears inline transform/opacity after each reveal so fixed grid overlays
+ * stay aligned to viewport pointer coordinates.
+ */
 export function LandingChoreography({
   children,
 }: {
@@ -152,9 +170,10 @@ export function LandingChoreography({
   const reducedMotion = useReducedMotion();
 
   React.useLayoutEffect(() => {
+    const root = containerRef.current;
     if (
       reducedMotion ||
-      !containerRef.current ||
+      !root ||
       typeof window === "undefined" ||
       typeof window.matchMedia !== "function"
     ) {
@@ -164,61 +183,41 @@ export function LandingChoreography({
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      const heroTl = gsap.timeline({
-        defaults: { ease: "power3.out", clearProps: "transform,opacity" },
-      });
-
-      heroTl
-        .from("[data-hero-reveal]", {
-          y: 14,
-          opacity: 0,
-          duration: 0.5,
-          stagger: 0.065,
-        })
-        .from(
-          "[data-hero-visual]",
-          {
-            y: 18,
-            scale: 0.985,
+      const sections = gsap.utils.toArray<HTMLElement>("section");
+      const heroSection = sections[0];
+      if (heroSection) {
+        const heroCells = heroSection.querySelectorAll<HTMLElement>(".bento-cell");
+        if (heroCells.length > 0) {
+          gsap.from(heroCells, {
+            y: 14,
             opacity: 0,
-            duration: 0.58,
-          },
-          "-=0.36"
-        );
+            duration: 0.48,
+            stagger: 0.06,
+            ease: "power3.out",
+            clearProps: "transform,opacity",
+          });
+        }
+      }
 
-      gsap.utils.toArray<HTMLElement>("[data-scroll-section]").forEach((section) => {
-        const heading = section.querySelector("[data-section-header]");
-        const cards = section.querySelectorAll("[data-stagger-card]");
+      sections.slice(1).forEach((section) => {
+        const cells = section.querySelectorAll<HTMLElement>(".bento-cell");
+        if (cells.length === 0) return;
 
-        const tl = gsap.timeline({
-          defaults: { ease: "power2.out", clearProps: "transform,opacity" },
+        gsap.from(cells, {
+          y: 16,
+          opacity: 0,
+          duration: 0.44,
+          stagger: 0.055,
+          ease: "power2.out",
+          clearProps: "transform,opacity",
           scrollTrigger: {
             trigger: section,
-            start: "top 84%",
+            start: "top 86%",
             once: true,
           },
         });
-
-        if (heading) {
-          tl.from(heading, { y: 12, opacity: 0, duration: 0.4 });
-        }
-
-        if (cards.length > 0) {
-          tl.from(
-            cards,
-            {
-              y: 16,
-              opacity: 0,
-              duration: 0.42,
-              stagger: 0.055,
-            },
-            heading ? "-=0.22" : 0
-          );
-        } else {
-          tl.from(section, { y: 14, opacity: 0, duration: 0.42 });
-        }
       });
-    }, containerRef);
+    }, root);
 
     return () => ctx.revert();
   }, [reducedMotion]);

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { BentoCursorLight } from "@/components/layout/bento-cursor-light";
 import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
@@ -14,7 +15,7 @@ const adobeClean = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "GymGenie: AI based Exercise Tutor",
+    default: "GymGenie: AI Exercise Tutor",
     template: "%s · GymGenie",
   },
   description:
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#090B0A",
+  themeColor: "#08090B",
   colorScheme: "dark",
 };
 
@@ -41,6 +42,7 @@ export default function RootLayout({
         className="bg-canvas text-ink-primary antialiased selection:bg-accent selection:text-canvas"
         suppressHydrationWarning
       >
+        <BentoCursorLight />
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

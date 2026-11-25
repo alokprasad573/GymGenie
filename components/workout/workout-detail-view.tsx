@@ -34,6 +34,11 @@ export function WorkoutDetailView({ initialWorkout }: WorkoutDetailViewProps) {
   const [deleting, setDeleting] = React.useState(false);
 
   const def = EXERCISES[workout.exerciseName];
+  const maxSetReps = Math.max(
+    1,
+    workout.targetReps,
+    ...workout.sets.map((s) => s.reps)
+  );
 
   async function handleSaveNotes(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -78,21 +83,19 @@ export function WorkoutDetailView({ initialWorkout }: WorkoutDetailViewProps) {
   }
 
   return (
-    <PageChoreography className="space-y-6">
-      <div
-        data-page-header
-        className="flex flex-wrap items-center justify-between gap-4"
-      >
-        <div className="min-w-0 space-y-1">
+    <PageChoreography className="space-y-4">
+      {/* Header Bento Cell */}
+      <div className="bento-cell  flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
+        <div className="min-w-0 space-y-1.5">
           <Link
             href="/history"
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-[6px] text-xs text-ink-secondary transition-colors hover:text-ink-primary"
+            className="inline-flex min-h-8 items-center gap-1.5 rounded-[8px] text-xs text-ink-secondary transition-colors hover:text-ink-primary"
           >
             <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
             Back to history
           </Link>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-2xl font-medium tracking-[-0.02em] text-ink-primary">
+            <h1 className="text-2xl font-medium tracking-[-0.025em] text-ink-primary">
               {def.label}
             </h1>
             <Badge
@@ -101,7 +104,7 @@ export function WorkoutDetailView({ initialWorkout }: WorkoutDetailViewProps) {
               {workout.status === "COMPLETED" ? "Completed" : "Interrupted"}
             </Badge>
           </div>
-          <p className="text-sm text-ink-secondary">
+          <p className=" text-xs text-ink-secondary">
             Logged on {formatShortDate(workout.startedAt)}
           </p>
         </div>
@@ -118,29 +121,31 @@ export function WorkoutDetailView({ initialWorkout }: WorkoutDetailViewProps) {
         </Button>
       </div>
 
+      {/* 3-Cell Bento KPI Strip */}
       <div className="grid gap-4 sm:grid-cols-3">
         <MetricCard
-          data-stagger-item
+          indexLabel="01"
           label="Total reps"
           value={workout.totalReps}
           context={`Target ${workout.targetReps} reps per set`}
           accent
         />
         <MetricCard
-          data-stagger-item
+          indexLabel="02"
           label="Sets logged"
           value={`${workout.totalSets} / ${workout.targetSets}`}
           context="Completed or partial sets"
         />
         <MetricCard
-          data-stagger-item
+          indexLabel="03"
           label="Active duration"
           value={formatDuration(workout.durationSeconds)}
           context="Excludes pauses and rest"
         />
       </div>
 
-      <div data-scroll-reveal className="grid gap-6 lg:grid-cols-12">
+      {/* 7/5 Asymmetric Bento Inspector */}
+      <div className="grid gap-4 lg:grid-cols-12">
         <Card className="lg:col-span-7">
           <CardHeader>
             <CardTitle>Set breakdown</CardTitle>
@@ -148,37 +153,53 @@ export function WorkoutDetailView({ initialWorkout }: WorkoutDetailViewProps) {
               Per-set reps and active durations captured during this session
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
             {workout.sets.length === 0 ? (
-              <p className="text-sm text-ink-secondary">
+              <div className="bento-well p-4 text-sm text-ink-secondary">
                 No individual set rows recorded for this session.
-              </p>
+              </div>
             ) : (
-              <div className="divide-y divide-[rgba(255,255,255,0.06)] rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-canvas">
-                {workout.sets.map((s) => (
-                  <div
-                    key={s.setNumber}
-                    className="flex items-center justify-between px-4 py-3 text-sm"
-                  >
-                    <span className="text-ink-secondary">Set {s.setNumber}</span>
-                    <div className="flex items-center gap-6 font-medium tabular-nums">
-                      <span className="text-ink-primary">{s.reps} reps</span>
-                      <span className="text-ink-muted">
-                        {s.durationSeconds !== undefined
-                          ? formatDuration(s.durationSeconds)
-                          : "-"}
-                      </span>
+              <div className="space-y-2.5">
+                {workout.sets.map((s) => {
+                  const pct = Math.min(100, Math.round((s.reps / maxSetReps) * 100));
+                  return (
+                    <div
+                      key={s.setNumber}
+                      className="bento-well space-y-2 px-4 py-3 text-sm"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <span className=" text-xs text-ink-secondary">
+                          Set {String(s.setNumber).padStart(2, "0")}
+                        </span>
+                        <div className="flex items-center gap-5  text-xs font-medium tabular-nums">
+                          <span className="text-ink-primary">{s.reps} reps</span>
+                          <span className="text-ink-muted">
+                            {s.durationSeconds !== undefined
+                              ? formatDuration(s.durationSeconds)
+                              : "-"}
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        aria-hidden="true"
+                        className="h-1.5 w-full overflow-hidden rounded-full bg-surface"
+                      >
+                        <div
+                          className="h-full rounded-full bg-accent/85"
+                          style={{ width: `${Math.max(4, pct)}%` }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
         </Card>
 
-        <div className="space-y-6 lg:col-span-5">
+        <div className="space-y-4 lg:col-span-5">
           {workout.exerciseMetrics &&
-            Object.keys(workout.exerciseMetrics).length > 0 ? (
+          Object.keys(workout.exerciseMetrics).length > 0 ? (
             <Card>
               <CardHeader>
                 <CardTitle>Final detector snapshot</CardTitle>
@@ -187,12 +208,12 @@ export function WorkoutDetailView({ initialWorkout }: WorkoutDetailViewProps) {
                 {Object.entries(workout.exerciseMetrics).map(([k, v]) => (
                   <div
                     key={k}
-                    className="flex items-center justify-between gap-3 border-b border-[rgba(255,255,255,0.06)] py-2 text-sm last:border-b-0"
+                    className="bento-well flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm"
                   >
                     <span className="min-w-0 break-words text-ink-secondary">
                       {k}
                     </span>
-                    <span className="shrink-0 font-medium text-ink-primary tabular-nums">
+                    <span className="shrink-0  text-xs font-medium text-ink-primary tabular-nums">
                       {String(v)}
                     </span>
                   </div>
@@ -214,7 +235,7 @@ export function WorkoutDetailView({ initialWorkout }: WorkoutDetailViewProps) {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add notes on depth, tempo, or resistance..."
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-canvas p-3 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent focus:outline-none"
+                  className="w-full rounded-[10px] border border-[rgba(255,255,255,0.1)] bg-canvas p-3 text-sm text-ink-primary placeholder:text-ink-muted focus:border-accent focus:outline-none"
                 />
                 <Button type="submit" variant="secondary" disabled={saving}>
                   {saving ? "Saving..." : "Save notes"}

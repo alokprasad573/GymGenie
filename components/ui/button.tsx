@@ -6,20 +6,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[8px] text-sm font-medium transition-[background-color,border-color,color,transform] duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:pointer-events-none disabled:opacity-45 active:scale-[0.985] cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[10px] text-sm font-medium transition-[background-color,border-color,color,transform] duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:pointer-events-none disabled:opacity-45 active:scale-[0.985] cursor-pointer",
   {
     variants: {
       variant: {
         primary:
           "bg-accent text-canvas hover:bg-accent-hover border border-transparent",
         secondary:
-          "bg-elevated text-ink-primary border border-[rgba(255,255,255,0.1)] hover:bg-subtle hover:border-[rgba(255,255,255,0.16)]",
+          "bg-elevated text-ink-primary border border-[rgba(255,255,255,0.1)] hover:bg-subtle hover:border-[rgba(255,255,255,0.18)]",
         outline:
-          "bg-transparent text-ink-primary border border-[rgba(255,255,255,0.12)] hover:bg-surface hover:border-[rgba(255,255,255,0.2)]",
+          "bg-canvas/70 text-ink-primary border border-[rgba(255,255,255,0.12)] hover:bg-surface hover:border-[rgba(255,255,255,0.2)]",
         ghost:
           "bg-transparent text-ink-secondary hover:text-ink-primary hover:bg-surface border border-transparent",
         destructive:
-          "bg-[#2B1517] text-[#FCA5A5] border border-[#F06A6A]/30 hover:bg-[#3A1C1F]",
+          "bg-[#2B1517] text-[#FCA5A5] border border-[#F87171]/30 hover:bg-[#3A1C1F]",
       },
       size: {
         sm: "h-9 px-3 text-xs sm:h-8",

@@ -3,6 +3,8 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { PageChoreography } from "@/components/animations/page-choreography";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -119,15 +121,15 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <PageChoreography className="space-y-4">
+      {/* Header Bento Cell */}
+      <div className="bento-cell  flex flex-wrap items-end justify-between gap-4 p-5 sm:p-6">
         <div>
-          <h1 className="text-2xl font-medium tracking-[-0.02em] text-ink-primary sm:text-[30px]">
+          <h1 className="mt-1 text-2xl font-medium tracking-[-0.025em] text-ink-primary sm:text-[30px]">
             Profile and settings
           </h1>
           <p className="mt-1 text-sm text-ink-secondary">
-            Manage your account details, default training preferences, and
-            password security.
+            Manage your account details, default training preferences, and password security
           </p>
         </div>
         <Button
@@ -141,11 +143,44 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-12">
+      {/* Compact Account Summary Bento Strip */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <div className="bento-cell px-4 py-3.5">
+          <span className="block  text-[11px] text-ink-muted">
+            Username
+          </span>
+          <span className="mt-1 block truncate  text-sm font-medium text-ink-primary">
+            @{initialUser.displayUsername || initialUser.username}
+          </span>
+        </div>
+        <div className="bento-cell px-4 py-3.5">
+          <span className="block  text-[11px] text-ink-muted">
+            Default rest
+          </span>
+          <span className="mt-1 block  text-sm font-medium text-accent tabular-nums">
+            {defaultRestSeconds}s
+          </span>
+        </div>
+        <div className="bento-cell flex items-center justify-between gap-2 px-4 py-3.5">
+          <div>
+            <span className="block  text-[11px] text-ink-muted">
+              Active modules
+            </span>
+            <span className="mt-1 block text-xs text-ink-secondary">
+              {enableVoice ? "Voice on" : "Voice off"} ·{" "}
+              {enableAiCoaching ? "AI coach on" : "Local cues"}
+            </span>
+          </div>
+          <Badge variant="neutral">Local vision</Badge>
+        </div>
+      </div>
+
+      {/* 7/5 Asymmetric Bento Settings Grid */}
+      <div className="grid gap-4 lg:grid-cols-12">
         <Card className="min-w-0 lg:col-span-7">
           <CardHeader>
             <CardTitle>Account and workout defaults</CardTitle>
-            <CardDescription className="break-all">
+            <CardDescription className="break-all  text-xs">
               Email: {initialUser.email}
             </CardDescription>
           </CardHeader>
@@ -154,7 +189,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
               {profileError ? (
                 <div
                   role="alert"
-                  className="rounded-[8px] border border-status-danger/35 bg-[#2B1517]/60 px-3 py-2.5 text-sm text-[#FCA5A5]"
+                  className="rounded-[10px] border border-status-danger/35 bg-[#2B1517]/70 px-3 py-2.5 text-sm text-[#FCA5A5]"
                 >
                   {profileError}
                 </div>
@@ -182,7 +217,9 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="profileAvatar">Avatar URL (HTTPS or relative path)</Label>
+                <Label htmlFor="profileAvatar">
+                  Avatar URL (HTTPS or relative path)
+                </Label>
                 <Input
                   id="profileAvatar"
                   value={avatarUrl}
@@ -192,7 +229,9 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="defaultRest">Default rest duration (seconds)</Label>
+                <Label htmlFor="defaultRest">
+                  Default rest duration (seconds)
+                </Label>
                 <Input
                   id="defaultRest"
                   type="number"
@@ -205,12 +244,12 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                       Math.max(0, Number.parseInt(e.target.value, 10) || 0)
                     )
                   }
-                  className="w-full tabular-nums sm:max-w-40"
+                  className="w-full  tabular-nums sm:max-w-40"
                 />
               </div>
 
-              <div className="space-y-3 border-t border-[rgba(255,255,255,0.06)] pt-4">
-                <div className="flex items-center justify-between gap-4">
+              <div className="space-y-2.5 border-t border-[rgba(255,255,255,0.06)] pt-4">
+                <div className="bento-well flex items-center justify-between gap-4 px-4 py-3">
                   <div>
                     <p className="text-sm font-medium text-ink-primary">
                       Enable voice feedback by default
@@ -226,7 +265,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                   />
                 </div>
 
-                <div className="flex items-center justify-between gap-4">
+                <div className="bento-well flex items-center justify-between gap-4 px-4 py-3">
                   <div>
                     <p className="text-sm font-medium text-ink-primary">
                       Enable AI coaching by default
@@ -267,7 +306,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
               {passwordError ? (
                 <div
                   role="alert"
-                  className="rounded-[8px] border border-status-danger/35 bg-[#2B1517]/60 px-3 py-2.5 text-sm text-[#FCA5A5]"
+                  className="rounded-[10px] border border-status-danger/35 bg-[#2B1517]/70 px-3 py-2.5 text-sm text-[#FCA5A5]"
                 >
                   {passwordError}
                 </div>
@@ -310,6 +349,6 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageChoreography>
   );
 }

@@ -61,6 +61,9 @@ function LoginFormInner() {
   return (
     <Card>
       <CardHeader>
+        <span className="font-mono text-[11px] text-accent">
+          Account access
+        </span>
         <CardTitle className="text-xl">Sign in to GymGenie</CardTitle>
         <CardDescription>
           Enter your email or username and password to resume training.

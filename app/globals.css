@@ -1,24 +1,44 @@
 @import "tailwindcss";
 
 :root {
-  --bg-canvas: #090b0a;
-  --bg-surface: #111613;
-  --bg-elevated: #171e19;
-  --bg-subtle: #1d2620;
+  /* BentoGraph Precision Graphite Ramp */
+  --bg-canvas: #08090b;
+  --bg-surface: #101216;
+  --bg-elevated: #16191f;
+  --bg-subtle: #1d2129;
+
+  /* Signal Lime Brand Accent */
   --accent: #c6ff4d;
   --accent-hover: #d4ff75;
-  --accent-muted: rgba(198, 255, 77, 0.14);
-  --text-primary: #f5f7f2;
-  --text-secondary: #9aa49b;
-  --text-muted: #6c766e;
+
+  /* 3-Tier Ink Hierarchy (WCAG AA+ on #08090B & #101216) */
+  --text-primary: #f4f6f8;
+  --text-secondary: #9ca3af;
+  --text-muted: #717987;
+
+  /* Architectural Hairline Borders & Accent Drafting Grid */
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.16);
-  --status-success: #4ade80;
+  --graph-minor: color-mix(in srgb, var(--accent) 4%, transparent);
+  --graph-major: color-mix(in srgb, var(--accent) 8.5%, transparent);
+  --graph-minor-lit: color-mix(in srgb, var(--accent) 22%, transparent);
+  --graph-major-lit: color-mix(in srgb, var(--accent) 44%, transparent);
+
+  /* Cursor Light Telemetry (animated via GSAP in BentoCursorLight) */
+  --cursor-x: 50vw;
+  --cursor-y: 35vh;
+  --cursor-active: 0;
+
+  /* Semantic Telemetry Status Tokens */
+  --status-success: #34d399;
   --status-warning: #f5b942;
-  --status-danger: #f06a6a;
-  --radius-control: 8px;
-  --radius-card: 12px;
-  --radius-panel: 16px;
+  --status-danger: #f87171;
+
+  /* Nested Bento Radius System */
+  --radius-well: 10px;
+  --radius-card: 16px;
+
+  /* Unified Motion Curve */
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -38,7 +58,7 @@
   --color-status-warning: var(--status-warning);
   --color-status-danger: var(--status-danger);
   --font-sans: var(--font-brand-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
 * {
@@ -64,26 +84,13 @@ body {
   overflow-x: clip;
 }
 
-.gg-no-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.gg-no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-}
-
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
+/* Reserved strictly for active camera capture and live workout states */
 @keyframes gg-live-dot {
-
   0%,
   100% {
     opacity: 1;
@@ -94,62 +101,141 @@ body {
   }
 }
 
-/* Reserved strictly for active camera capture and live workout states */
-.live-indicator-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 9999px;
-  background-color: var(--accent);
-  animation: gg-live-dot 2s ease-in-out infinite;
+/* Zero-JS GPU-composited Bento entrance & toast animations */
+@keyframes bento-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.gg-stage-frame {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+@keyframes bento-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.gg-surface-interactive {
-  transition:
-    border-color 160ms var(--ease-standard),
-    background-color 160ms var(--ease-standard);
-}
+@layer components {
+  /* BentoGraph Coordinate Canvas with Cursor-Reactive Illumination */
+  .bg-bento-graph {
+    position: relative;
+    isolation: isolate;
+    background-color: var(--bg-canvas);
+  }
 
-.gg-surface-interactive:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-}
+  /* Base quiet drafting grid (viewport-anchored so it aligns identically with lit layer) */
+  .bg-bento-graph::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--graph-minor) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--graph-minor) 1px, transparent 1px),
+      linear-gradient(to right, var(--graph-major) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--graph-major) 1px, transparent 1px);
+    background-size: 24px 24px, 24px 24px, 96px 96px, 96px 96px;
+  }
 
-/* Static neutral 3D perspective floor plane for marketing and auth screens */
-.gg-perspective-stage {
-  perspective: 920px;
-  perspective-origin: 50% 0%;
-  mask-image: linear-gradient(to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.45) 40%,
-      rgba(0, 0, 0, 0.85) 100%);
-  -webkit-mask-image: linear-gradient(to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.45) 40%,
-      rgba(0, 0, 0, 0.85) 100%);
-}
+  /* Lighter grid + soft surface illumination revealed around pointer movement */
+  .bg-bento-graph::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        280px circle at var(--cursor-x) var(--cursor-y),
+        color-mix(in srgb, var(--accent) 7%, transparent),
+        transparent 72%
+      ),
+      linear-gradient(to right, var(--graph-minor-lit) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--graph-minor-lit) 1px, transparent 1px),
+      linear-gradient(to right, var(--graph-major-lit) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--graph-major-lit) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      24px 24px,
+      24px 24px,
+      96px 96px,
+      96px 96px;
+    mask-image: radial-gradient(
+      340px circle at var(--cursor-x) var(--cursor-y),
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.5) 45%,
+      transparent 76%
+    );
+    -webkit-mask-image: radial-gradient(
+      340px circle at var(--cursor-x) var(--cursor-y),
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.5) 45%,
+      transparent 76%
+    );
+    opacity: var(--cursor-active);
+  }
 
-.gg-perspective-grid {
-  position: absolute;
-  inset: -40% -25% -20%;
-  transform-origin: 50% 0%;
-  transform: rotateX(70deg);
-  background-image:
-    linear-gradient(to right, rgba(245, 247, 242, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(245, 247, 242, 0.05) 1px, transparent 1px);
-  background-size: 64px 64px;
-}
+  .bento-cell {
+    border-radius: var(--radius-card);
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-surface);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  }
 
-.gg-backdrop-vignette {
-  background: radial-gradient(ellipse 85% 75% at 50% 44%,
-      transparent 42%,
-      rgba(9, 11, 10, 0.78) 100%);
+  .bento-well {
+    border-radius: var(--radius-well);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background-color: var(--bg-canvas);
+  }
+
+  .gg-no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .gg-no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .live-indicator-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: var(--accent);
+    animation: gg-live-dot 2s ease-in-out infinite;
+  }
+
+  .bento-enter {
+    animation: bento-fade-up 280ms var(--ease-standard) both;
+  }
+
+  .bento-toast-enter {
+    animation: bento-toast-in 160ms var(--ease-standard) both;
+  }
+
+  /* Subtle drafting vignette for marketing and auth screens */
+  .gg-backdrop-vignette {
+    background: radial-gradient(
+      ellipse 88% 78% at 50% 38%,
+      transparent 36%,
+      rgba(8, 9, 11, 0.84) 100%
+    );
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -159,7 +245,13 @@ body {
     scroll-behavior: auto !important;
   }
 
-  .live-indicator-dot {
+  .bg-bento-graph::after {
+    display: none;
+  }
+
+  .live-indicator-dot,
+  .bento-enter,
+  .bento-toast-enter {
     animation: none;
   }
 }

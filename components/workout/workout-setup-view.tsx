@@ -144,13 +144,11 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
 
   return (
     <PageChoreography>
-      <form onSubmit={handleStartWorkout} className="space-y-6">
-        <div
-          data-page-header
-          className="flex flex-wrap items-end justify-between gap-4"
-        >
+      <form onSubmit={handleStartWorkout} className="space-y-4">
+        {/* BentoGraph Header Cell */}
+        <div className="bento-cell  flex flex-wrap items-end justify-between gap-4 p-5 sm:p-6">
           <div>
-            <h1 className="text-2xl font-medium tracking-[-0.02em] text-ink-primary sm:text-[30px]">
+            <h1 className="mt-1 text-2xl font-medium tracking-[-0.025em] text-ink-primary sm:text-[30px]">
               Workout setup
             </h1>
             <p className="mt-1 text-sm text-ink-secondary">
@@ -171,24 +169,26 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
         {validationError ? (
           <div
             role="alert"
-            className="rounded-[10px] border border-status-danger/35 bg-[#2B1517]/60 px-4 py-3 text-sm text-[#FCA5A5]"
+            className="rounded-[12px] border border-status-danger/35 bg-[#2B1517]/70 px-4 py-3 text-sm text-[#FCA5A5]"
           >
             {validationError}
           </div>
         ) : null}
 
-        <div className="grid gap-6 lg:grid-cols-12">
-          {/* Left: Exercise selection + targets */}
-          <div className="space-y-6 lg:col-span-7">
-            <Card data-stagger-item>
-              <CardHeader>
-                <CardTitle>Choose exercise</CardTitle>
-                <CardDescription>
-                  All five biomechanics detectors run locally in your browser
-                </CardDescription>
+        <div className="grid gap-4 lg:grid-cols-12">
+          {/* Left Bento Column (7 cols): Exercise selection + targets */}
+          <div className="space-y-4 lg:col-span-7">
+            <Card>
+              <CardHeader className="flex-row flex-wrap items-start justify-between gap-2 space-y-0">
+                <div>
+                  <CardTitle>Choose exercise</CardTitle>
+                  <CardDescription>
+                    All five biomechanics detectors run locally in your browser.
+                  </CardDescription>
+                </div>
               </CardHeader>
-              <CardContent className="grid gap-3 sm:grid-cols-2">
-                {EXERCISE_ORDER.map((id) => {
+              <CardContent className="grid gap-3 pt-2 sm:grid-cols-2">
+                {EXERCISE_ORDER.map((id, idx) => {
                   const ex = EXERCISES[id];
                   const selected = config.exercise === id;
                   return (
@@ -199,10 +199,11 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                       onClick={() => handleSelectExercise(id)}
                       aria-pressed={selected}
                       className={cn(
-                        "flex flex-col items-start gap-2 rounded-[8px] border p-4 text-left transition-colors duration-150 cursor-pointer",
+                        "flex cursor-pointer flex-col items-start justify-between gap-2.5 rounded-[12px] border p-4 text-left transition-colors duration-150",
+                        idx === 4 && "sm:col-span-2",
                         selected
-                          ? "border-accent/55 bg-elevated shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-                          : "border-[rgba(255,255,255,0.08)] bg-canvas hover:border-[rgba(255,255,255,0.16)] hover:bg-surface"
+                          ? "border-accent/50 bg-elevated shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                          : "border-[rgba(255,255,255,0.07)] bg-canvas hover:border-[rgba(255,255,255,0.16)] hover:bg-surface"
                       )}
                     >
                       <div className="flex w-full flex-wrap items-center justify-between gap-2">
@@ -212,8 +213,8 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                         {selected ? (
                           <Badge variant="accent">Selected</Badge>
                         ) : (
-                          <span className="text-xs text-ink-muted">
-                            {ex.muscleGroup}
+                          <span className=" text-[11px] text-ink-muted tabular-nums">
+                            {ex.thresholds.primaryTrigger}°/{ex.thresholds.returnTrigger}°
                           </span>
                         )}
                       </div>
@@ -228,16 +229,22 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
 
             <Card>
               <CardHeader>
-                <CardTitle>Session targets and coaching</CardTitle>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <CardTitle>Session targets and coaching</CardTitle>
+                  <span className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-canvas px-2 py-0.5  text-[11px] text-accent tabular-nums">
+                    {selectedExercise.thresholds.primaryTrigger}° /{" "}
+                    {selectedExercise.thresholds.returnTrigger}°
+                  </span>
+                </div>
                 <CardDescription>
                   Thresholds for {selectedExercise.label}: trigger{" "}
                   {selectedExercise.thresholds.primaryTrigger}° · return{" "}
                   {selectedExercise.thresholds.returnTrigger}°
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="space-y-1.5">
+              <CardContent className="space-y-4 pt-2">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="bento-well space-y-1.5 p-3">
                     <Label htmlFor="totalSets">Sets (1–50)</Label>
                     <Input
                       id="totalSets"
@@ -251,11 +258,11 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                           totalSets: Number.parseInt(e.target.value, 10) || 1,
                         }))
                       }
-                      className="tabular-nums"
+                      className=" tabular-nums"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="bento-well space-y-1.5 p-3">
                     <Label htmlFor="targetReps">Reps per set (1–100)</Label>
                     <Input
                       id="targetReps"
@@ -269,11 +276,11 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                           targetReps: Number.parseInt(e.target.value, 10) || 1,
                         }))
                       }
-                      className="tabular-nums"
+                      className=" tabular-nums"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="bento-well space-y-1.5 p-3">
                     <Label htmlFor="restDuration">Rest seconds (0–600)</Label>
                     <Input
                       id="restDuration"
@@ -291,13 +298,13 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                           ),
                         }))
                       }
-                      className="tabular-nums"
+                      className=" tabular-nums"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-3 border-t border-[rgba(255,255,255,0.06)] pt-4">
-                  <div className="flex items-center justify-between gap-4">
+                <div className="space-y-2.5 border-t border-[rgba(255,255,255,0.06)] pt-4">
+                  <div className="bento-well flex items-center justify-between gap-4 px-4 py-3">
                     <div>
                       <p className="text-sm font-medium text-ink-primary">
                         Voice feedback
@@ -316,7 +323,7 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                     />
                   </div>
 
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="bento-well flex items-center justify-between gap-4 px-4 py-3">
                     <div>
                       <p className="text-sm font-medium text-ink-primary">
                         AI coaching cues
@@ -342,7 +349,7 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
             </Card>
           </div>
 
-          {/* Right: Camera preview & positioning */}
+          {/* Right Bento Column (5 cols): Camera preview + 3D Rig + Metrics */}
           <div className="space-y-4 lg:col-span-5">
             <Card>
               <CardHeader>
@@ -359,7 +366,7 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                 <CardDescription>{selectedExercise.cameraCue}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="relative aspect-video w-full overflow-hidden rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-canvas">
+                <div className="bento-well  relative aspect-video w-full overflow-hidden">
                   <video
                     ref={videoRef}
                     muted
@@ -372,7 +379,7 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
 
                   {!previewActive ? (
                     <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-surface">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[rgba(255,255,255,0.09)] bg-surface">
                         <Camera
                           className="h-5 w-5 text-ink-muted"
                           strokeWidth={1.5}
@@ -393,7 +400,7 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                 {cameraError ? (
                   <div
                     role="alert"
-                    className="rounded-[8px] border border-status-danger/35 bg-[#2B1517]/60 p-3 text-xs text-[#FCA5A5]"
+                    className="rounded-[10px] border border-status-danger/35 bg-[#2B1517]/70 p-3 text-xs text-[#FCA5A5]"
                   >
                     <p className="font-medium">{cameraError.title}</p>
                     <p className="mt-1 text-ink-secondary">
@@ -419,7 +426,10 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                       </SelectTrigger>
                       <SelectContent>
                         {devices.map((device) => (
-                          <SelectItem key={device.deviceId} value={device.deviceId}>
+                          <SelectItem
+                            key={device.deviceId}
+                            value={device.deviceId}
+                          >
                             {device.label}
                           </SelectItem>
                         ))}
@@ -466,30 +476,32 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
               </CardContent>
             </Card>
 
-            <Card data-stagger-item>
+            <Card>
               <CardHeader>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <CardTitle className="text-sm">Form reference rig</CardTitle>
-                  <span className="text-xs font-medium text-accent tabular-nums">
+                  <span className=" text-xs font-medium text-accent tabular-nums">
                     {selectedExercise.thresholds.primaryTrigger}° /{" "}
                     {selectedExercise.thresholds.returnTrigger}°
                   </span>
                 </div>
                 <CardDescription>
-                  Key joints highlighted for {selectedExercise.shortLabel.toLowerCase()}
+                  Key joints highlighted for{" "}
+                  {selectedExercise.shortLabel.toLowerCase()}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="h-[176px] w-full overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-canvas">
+                <div className="bento-well  h-[180px] w-full overflow-hidden">
                   <ExerciseRigPreview
                     exercise={config.exercise}
                     compact
+                    className="bg-transparent"
                   />
                 </div>
               </CardContent>
             </Card>
 
-            <Card data-stagger-item>
+            <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Tracked metrics</CardTitle>
               </CardHeader>
@@ -497,10 +509,10 @@ export function WorkoutSetupView({ initialPreferences }: WorkoutSetupViewProps) 
                 {selectedExercise.metricDefinitions.map((metric) => (
                   <div
                     key={metric.key}
-                    className="flex items-center justify-between border-b border-[rgba(255,255,255,0.06)] py-2 text-sm last:border-b-0"
+                    className="bento-well flex items-center justify-between px-3.5 py-2.5 text-sm"
                   >
                     <span className="text-ink-secondary">{metric.label}</span>
-                    <span className="text-xs font-medium text-ink-muted">
+                    <span className=" text-xs font-medium text-ink-muted">
                       {metric.unit ? `Degrees (${metric.unit})` : "Live status"}
                     </span>
                   </div>

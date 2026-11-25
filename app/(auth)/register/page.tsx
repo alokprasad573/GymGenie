@@ -62,6 +62,9 @@ export default function RegisterPage() {
   return (
     <Card>
       <CardHeader>
+        <span className="font-mono text-[11px] text-accent">
+          New athlete profile
+        </span>
         <CardTitle className="text-xl">Create your account</CardTitle>
         <CardDescription>
           Track workout sessions, pose metrics, and progression across devices.

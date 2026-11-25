@@ -22,16 +22,16 @@ export function renderPoseOverlay(
   ctx.clearRect(0, 0, width, height);
 
   if (!options.poseDetected || !landmarks || landmarks.length === 0) {
-    ctx.fillStyle = "rgba(9, 11, 10, 0.72)";
+    ctx.fillStyle = "rgba(8, 9, 11, 0.8)";
     ctx.fillRect(16, 16, 260, 52);
-    ctx.strokeStyle = "rgba(245, 185, 66, 0.5)";
+    ctx.strokeStyle = "rgba(245, 185, 66, 0.45)";
     ctx.lineWidth = 1;
     ctx.strokeRect(16, 16, 260, 52);
 
     ctx.fillStyle = "#F5B942";
-    ctx.font = "600 13px ui-sans-serif, system-ui, -apple-system, sans-serif";
+    ctx.font = "600 12px ui-monospace, SFMono-Regular, Menlo, monospace";
     ctx.fillText("NO POSE DETECTED", 28, 38);
-    ctx.fillStyle = "#9AA49B";
+    ctx.fillStyle = "#9CA3AF";
     ctx.font = "400 12px ui-sans-serif, system-ui, sans-serif";
     ctx.fillText("Step into frame facing the camera", 28, 56);
     return;
@@ -78,10 +78,10 @@ export function renderPoseOverlay(
       const cy = mapY(lm.y);
       ctx.beginPath();
       ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
-      ctx.fillStyle = "#F5F7F2";
+      ctx.fillStyle = "#F4F6F8";
       ctx.fill();
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = "#090B0A";
+      ctx.strokeStyle = "#08090B";
       ctx.stroke();
     }
   }
@@ -89,18 +89,18 @@ export function renderPoseOverlay(
   // Bottom form status readout
   if (options.statusBanner) {
     const padX = 14;
-    ctx.font = "600 12px ui-sans-serif, system-ui, -apple-system, sans-serif";
+    ctx.font = "600 12px ui-monospace, SFMono-Regular, Menlo, monospace";
     const textWidth = ctx.measureText(options.statusBanner).width;
     const boxWidth = Math.min(width - 32, textWidth + padX * 2);
     const boxY = height - 46;
 
-    ctx.fillStyle = "rgba(9, 11, 10, 0.78)";
+    ctx.fillStyle = "rgba(8, 9, 11, 0.82)";
     ctx.fillRect(16, boxY, boxWidth, 30);
     ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
     ctx.lineWidth = 1;
     ctx.strokeRect(16, boxY, boxWidth, 30);
 
-    ctx.fillStyle = "#F5F7F2";
+    ctx.fillStyle = "#F4F6F8";
     ctx.fillText(options.statusBanner, 16 + padX, boxY + 19);
   }
 }

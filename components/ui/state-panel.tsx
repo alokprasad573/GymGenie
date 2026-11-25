@@ -35,18 +35,20 @@ export function StatePanel({
     <div
       role={variant === "error" ? "alert" : "status"}
       className={cn(
-        "flex flex-col items-start gap-3 rounded-[14px] border border-[rgba(255,255,255,0.08)] bg-surface p-6",
-        variant === "error" && "border-status-danger/25",
-        variant === "success" && "border-status-success/25",
+        "bento-cell flex flex-col items-start gap-3 p-6",
+        variant === "error" && "border-status-danger/30",
+        variant === "success" && "border-status-success/30",
         className
       )}
     >
-      <div className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-elevated">
+      <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[rgba(255,255,255,0.09)] bg-canvas">
         <Icon className={cn("h-4 w-4", iconTone)} strokeWidth={1.5} />
       </div>
       <div className="space-y-1">
         <h3 className="text-sm font-medium text-ink-primary">{title}</h3>
-        <p className="max-w-md text-sm text-ink-secondary">{description}</p>
+        <p className="max-w-md text-sm leading-6 text-ink-secondary">
+          {description}
+        </p>
       </div>
       {action ? <div className="pt-1">{action}</div> : null}
     </div>
