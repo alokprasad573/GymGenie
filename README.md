@@ -90,6 +90,16 @@ Comprehensive, production-grade technical documentation is available:
 
 ---
 
+## Screenshots
+
+| | |
+|---|---|
+| <img src="./public/images/overview/1.png" alt="GymGenie landing page" width="480"><br>**GymGenie landing page** — Introduces browser-based pose tracking and real-time form coaching for safer training. | <img src="./public/images/overview/2.png" alt="How GymGenie works" width="480"><br>**How GymGenie works** — Explains on-device MediaPipe processing, deterministic rep counting, privacy, and workout history. |
+| <img src="./public/images/overview/3.png" alt="Supported exercises" width="480"><br>**Supported exercises** — Displays five biomechanics detectors with calibrated joint-angle ranges and corrective tracking cues. | <img src="./public/images/app-images/1-dashboard.png" alt="Training dashboard" width="480"><br>**Training dashboard** — Summarizes workouts, reps, active duration, streaks, weekly volume, and recent sessions. |
+| <img src="./public/images/app-images/2-workout-setup.png" alt="Workout setup" width="480"><br>**Workout setup** — Lets athletes choose exercises, configure camera coaching, and preview tracked body metrics. | <img src="./public/images/app-images/3-analytics.png" alt="Performance analytics" width="480"><br>**Performance analytics** — Visualizes workout volume, exercise distribution, duration trends, and rep progression. |
+
+---
+
 ## Prerequisites
 
 - **Node.js:** `v22.x` or higher (verified on Node.js `v26.13.0` and `v24.x`).
