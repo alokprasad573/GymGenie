@@ -90,7 +90,7 @@ Comprehensive, production-grade technical documentation is available:
 
 ---
 
-## Screenshots
+## Application Overview
 
 | | |
 |---|---|
