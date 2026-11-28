@@ -15,7 +15,7 @@ const adobeClean = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "GymGenie: AI Exercise Tutor",
+    default: "GymGenie | AI Exercise Tutor",
     template: "%s · GymGenie",
   },
   description:
